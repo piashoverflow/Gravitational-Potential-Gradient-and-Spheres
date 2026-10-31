@@ -1,0 +1,6 @@
+{
+  "name": "Gravitational Field & Potential Mechanics Lab",
+  "description": "Interactive HSC Physics simulation exploring gravitational potential gradients, field vector relations (E = -∇V), spherical shells, and solid spheres with live synchronized graphs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

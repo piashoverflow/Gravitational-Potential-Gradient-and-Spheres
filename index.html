@@ -1,0 +1,2212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gravitational Field & Potential Mechanics Lab | HSC Physics</title>
+    <meta name="description" content="Interactive HSC Physics simulation exploring gravitational potential gradients, field vector relations (E = -∇V), spherical shells, and solid spheres with live synchronized graphs." />
+    <meta property="og:title" content="Gravitational Field & Potential Mechanics Lab | HSC Physics" />
+    <meta property="og:description" content="Interactive HSC Physics simulation exploring gravitational potential gradients, field vector relations (E = -∇V), spherical shells, and solid spheres with live synchronized graphs." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- KaTeX for pristine mathematical rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'monospace'],
+            },
+            colors: {
+              paper: '#F8FAFC',
+              slateCard: '#FFFFFF',
+              brandBlue: '#0284C7',
+              gradientEmerald: '#059669',
+              fieldCrimson: '#DC2626',
+              tangentAmber: '#D97706',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        background-color: #F8FAFC;
+        color: #0F172A;
+        -webkit-font-smoothing: antialiased;
+      }
+      .math-font {
+        font-family: 'KaTeX_Math', 'Times New Roman', serif;
+        font-style: italic;
+      }
+      /* Custom crisp scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #F1F5F9;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #CBD5E1;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94A3B8;
+      }
+      /* Slider Styling */
+      input[type="range"] {
+        accent-color: #0284C7;
+      }
+      canvas {
+        touch-action: none;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased selection:bg-sky-100 selection:text-sky-900">
+
+    <!-- TOP BAR (3-Zone Contract with Red Udvash Branding) -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 px-3 sm:px-6 py-2.5 w-full">
+      <div class="w-full flex items-center justify-between gap-3 sm:gap-6">
+        
+        <!-- Zone 1: Single text element wordmark -->
+        <div class="flex items-center gap-2.5 shrink-0">
+          <div class="w-8 h-8 rounded-lg bg-sky-600 text-white flex items-center justify-center font-bold text-base shadow-sm">
+            ∇
+          </div>
+          <div>
+            <a href="/" class="text-sm sm:text-base font-bold tracking-tight text-slate-900 whitespace-nowrap block leading-tight">
+              Gravitational Mechanics Lab
+            </a>
+            <span id="app-subtitle" class="text-[11px] text-slate-500 font-medium whitespace-nowrap block">
+              Gravitational Potential & Field Simulation · HSC Physics
+            </span>
+          </div>
+        </div>
+
+        <!-- Zone 2: Navigation Links / Module Switcher (Quiz removed) -->
+        <nav class="flex items-center gap-1 p-1 bg-slate-100 rounded-lg text-xs sm:text-sm font-medium">
+          <button id="tab-mod1" onclick="switchModule(1)" class="px-3 sm:px-4 py-1.5 rounded-md transition-all whitespace-nowrap bg-white text-slate-900 shadow-sm font-semibold">
+            Module 1: Potential Gradient (<span class="math-font">E = -∇V</span>)
+          </button>
+          <button id="tab-mod2" onclick="switchModule(2)" class="px-3 sm:px-4 py-1.5 rounded-md transition-all whitespace-nowrap text-slate-600 hover:text-slate-900 font-medium">
+            Module 2: Shells & Spheres (<span class="math-font">গোলক ও খোলক</span>)
+          </button>
+        </nav>
+
+        <!-- Zone 3: Primary Action / Quick Controls, Language Selector & RED UDVASH BRANDING -->
+        <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          <!-- Language Selector: English | বাংলা (Default: বাংলা) -->
+          <div class="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-semibold">
+            <button id="lang-btn-en" onclick="setLanguage('en')" class="px-2.5 py-1 rounded-md transition-all text-slate-600 hover:text-slate-900 font-medium">English</button>
+            <button id="lang-btn-bn" onclick="setLanguage('bn')" class="px-2.5 py-1 rounded-md transition-all bg-white text-slate-900 shadow-xs font-bold">বাংলা</button>
+          </div>
+
+          <button id="btn-sound" onclick="toggleAudio()" title="Toggle Sound Effects" class="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200">
+            <svg id="icon-sound-on" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+            <svg id="icon-sound-off" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/></svg>
+          </button>
+          <button id="btn-formula-sheet" onclick="openFormulaModal()" class="px-2.5 py-1.5 text-xs font-semibold text-sky-700 bg-sky-50 border border-sky-200 rounded-lg hover:bg-sky-100 transition-colors whitespace-nowrap hidden sm:inline-flex">
+            Formula Sheet
+          </button>
+
+          <!-- Top Right Corner: RED UDVASH BRANDING -->
+          <div class="flex items-center gap-1.5 px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-sm border border-red-700 select-none transition-colors">
+            <span class="font-black text-sm sm:text-base tracking-wide font-sans">উদ্ভাস</span>
+            <span class="text-[10px] font-bold text-red-100 font-mono tracking-wider">UDVASH</span>
+          </div>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- MAIN WRAPPER (Full width edge-to-edge layout, no empty side spaces) -->
+    <main class="w-full px-2 sm:px-4 lg:px-6 py-4 flex-1 flex flex-col gap-4">
+
+      <!-- ========================================================================= -->
+      <!-- MODULE 1: POTENTIAL GRADIENT & FIELD VECTOR LAB (E = -∇V = -dV/dr) -->
+      <!-- ========================================================================= -->
+      <section id="module-1-section" class="flex flex-col gap-6">
+        
+        <!-- Module Header & Physical Explanation (Kicker removed) -->
+        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 id="mod1-title" class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+              Gravitational Potential Gradient & Field Relation (<span class="math-font">E = -dV/dr</span>)
+            </h1>
+            <p id="mod1-desc" class="text-xs sm:text-sm text-slate-600 mt-1.5 max-w-3xl leading-relaxed">
+              Gravitational field intensity is the negative spatial derivative of gravitational potential with distance (<span class="font-medium text-slate-800">E = -dV/dr = -∇V</span>). 
+              The potential gradient vector <span class="font-semibold text-emerald-700">∇V</span> points uphill toward higher potential (outward), whereas the gravitational field <span class="font-semibold text-rose-700">E</span> always acts downhill toward decreasing potential (inward to center).
+            </p>
+          </div>
+          <!-- Presets -->
+          <div class="flex flex-wrap items-center gap-1.5 p-1 bg-slate-50 border border-slate-200 rounded-lg shrink-0">
+            <span id="lbl-presets" class="text-xs text-slate-500 font-medium px-2">Presets:</span>
+            <button id="btn-preset-earth" onclick="applyMod1Preset('earth')" class="px-2.5 py-1 text-xs font-medium bg-white text-slate-800 rounded border border-slate-200 hover:bg-slate-50 shadow-2xs">Earth</button>
+            <button id="btn-preset-moon" onclick="applyMod1Preset('moon')" class="px-2.5 py-1 text-xs font-medium bg-white text-slate-800 rounded border border-slate-200 hover:bg-slate-50 shadow-2xs">Moon</button>
+            <button id="btn-preset-mars" onclick="applyMod1Preset('mars')" class="px-2.5 py-1 text-xs font-medium bg-white text-slate-800 rounded border border-slate-200 hover:bg-slate-50 shadow-2xs">Mars</button>
+            <button id="btn-preset-heavy" onclick="applyMod1Preset('heavy')" class="px-2.5 py-1 text-xs font-medium bg-white text-slate-800 rounded border border-slate-200 hover:bg-slate-50 shadow-2xs">Heavy Planet</button>
+          </div>
+        </div>
+
+        <!-- 2-Zone Sandbox: Stage Canvas (Left/Top) & Controls/Slope Deck (Right/Bottom) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          <!-- LEFT: 2D Interactive Equipotential Canvas (7 cols on Desktop) -->
+          <div class="lg:col-span-7 bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                <h2 id="mod1-canvas-title" class="text-sm font-bold text-slate-800">2D Equipotential & Vector Field</h2>
+              </div>
+              <span id="mod1-canvas-hint" class="text-xs text-slate-500 font-mono">Drag probe to inspect</span>
+            </div>
+
+            <!-- Canvas Container -->
+            <div class="relative w-full h-[480px] sm:h-[540px] xl:h-[600px] bg-slate-900 rounded-lg overflow-hidden cursor-crosshair border border-slate-800" id="mod1-canvas-container">
+              <canvas id="mod1-canvas" class="w-full h-full block"></canvas>
+              
+              <!-- Floating On-Canvas Help Badge -->
+              <div class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur border border-slate-700/80 rounded px-2.5 py-1.5 text-slate-200 text-xs flex flex-col gap-0.5 pointer-events-none">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-0.5 bg-emerald-400 inline-block"></span>
+                  <span><strong class="text-emerald-400">∇V (Gradient):</strong> Uphill (+r, outward)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-0.5 bg-rose-400 inline-block"></span>
+                  <span><strong class="text-rose-400">E = -∇V (Field):</strong> Downhill (-r, inward)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-0.5 bg-amber-400 inline-block"></span>
+                  <span><strong class="text-amber-400">dV = 0 (Tangent):</strong> Orthogonal (90°)</span>
+                </div>
+              </div>
+
+              <!-- Particle Release Status Overlay -->
+              <div id="particle-status" class="hidden absolute bottom-3 left-3 bg-rose-950/80 border border-rose-600/60 rounded px-3 py-1.5 text-xs text-rose-200 backdrop-blur">
+                Accelerating inward under <span class="font-mono">a = GM/r²</span>
+              </div>
+            </div>
+
+            <!-- Vector Display Toggles -->
+            <div class="flex flex-wrap items-center gap-3 pt-1 text-xs text-slate-700 border-t border-slate-100">
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" id="chk-gradient" checked onchange="drawMod1()" class="rounded text-emerald-600 focus:ring-emerald-500">
+                <span id="chk-gradient-lbl" class="text-emerald-700 font-semibold">∇V Gradient</span>
+              </label>
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" id="chk-field" checked onchange="drawMod1()" class="rounded text-rose-600 focus:ring-rose-500">
+                <span id="chk-field-lbl" class="text-rose-700 font-semibold">E Field (-∇V)</span>
+              </label>
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" id="chk-tangent" checked onchange="drawMod1()" class="rounded text-amber-600 focus:ring-amber-500">
+                <span id="chk-tangent-lbl" class="text-amber-700 font-semibold">Equipotential Tangent</span>
+              </label>
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" id="chk-ortho" checked onchange="drawMod1()" class="rounded text-slate-600 focus:ring-slate-500">
+                <span id="chk-ortho-lbl">90° Orthogonal Box</span>
+              </label>
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" id="chk-contours" checked onchange="drawMod1()" class="rounded text-sky-600 focus:ring-sky-500">
+                <span id="chk-contours-lbl">Contour Labels</span>
+              </label>
+            </div>
+
+            <!-- Action Buttons: Release Particle, Reset Probe -->
+            <div class="flex items-center gap-2 pt-2">
+              <button id="btn-release" onclick="toggleParticleDrop()" class="flex-1 py-2 px-3 text-xs font-semibold rounded-lg bg-rose-600 text-white hover:bg-rose-700 shadow-sm transition-colors flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span id="btn-release-text">Release Test Particle (Free Fall)</span>
+              </button>
+              <button id="btn-reset-probe" onclick="resetMod1Probe()" class="py-2 px-3 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+                Reset Probe Position
+              </button>
+            </div>
+          </div>
+
+          <!-- RIGHT: Synchronized 1D V(r) Slope Canvas & Telemetry (5 cols on Desktop) -->
+          <div class="lg:col-span-5 flex flex-col gap-4">
+            
+            <!-- Synchronized 1D V(r) Slope Canvas -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col gap-2">
+              <div class="flex items-center justify-between pb-1 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                  <h3 id="mod1-graph-title" class="text-sm font-bold text-slate-800">1D Potential Curve & Tangent Slope</h3>
+                </div>
+                <span class="text-xs font-mono text-emerald-600 font-semibold" id="label-tangent-slope">Slope = dV/dr</span>
+              </div>
+              <p id="mod1-graph-desc" class="text-xs text-slate-500">
+                The slope of this tangent line equals <span class="font-semibold text-emerald-700">dV/dr</span>. Since <span class="font-semibold text-rose-700">E = -dV/dr</span>, the field vector points directly opposite to the potential gradient.
+              </p>
+
+              <!-- Graph Canvas -->
+              <div class="relative w-full h-[240px] sm:h-[260px] bg-slate-50 rounded-lg border border-slate-200 overflow-hidden">
+                <canvas id="mod1-graph" class="w-full h-full block"></canvas>
+              </div>
+
+              <!-- Mathematical proof callout -->
+              <div class="p-2.5 bg-sky-50/60 rounded-lg border border-sky-200/80 text-xs text-sky-950 flex flex-col gap-1">
+                <div class="flex items-center justify-between font-mono font-semibold">
+                  <span>Slope of V(r) = +<span id="txt-slope-val">0.00</span> MJ/(kg·km)</span>
+                  <span class="text-rose-600">E = -Slope = <span id="txt-e-val">-0.00</span> N/kg</span>
+                </div>
+                <div id="mod1-ortho-note" class="text-[11px] text-slate-600">
+                  Orthogonality: <span class="text-emerald-700 font-medium">∇V ⊥ Equipotential</span> and <span class="text-rose-700 font-medium">E ⊥ Equipotential</span> (Angle = 90.0°).
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Mathematical Telemetry Card -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
+              <div class="flex items-center justify-between pb-1 border-b border-slate-100">
+                <h3 id="telemetry-title" class="text-sm font-bold text-slate-800">Live Mathematical Telemetry</h3>
+                <span id="telemetry-sub" class="text-[11px] text-slate-500 font-mono">Real-time Probe Metrics</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <!-- r -->
+                <div class="p-2 bg-slate-50 rounded border border-slate-200 flex flex-col">
+                  <span id="tele-r-lbl" class="text-slate-500 font-medium">Radial Distance (<span class="math-font">r</span>)</span>
+                  <span id="tele-r" class="text-slate-900 font-mono font-bold text-sm tabular-nums">0.00 km</span>
+                  <span id="tele-r-m" class="text-[10px] text-slate-500 font-mono">0.00 × 10⁶ m</span>
+                </div>
+                <!-- V -->
+                <div class="p-2 bg-slate-50 rounded border border-slate-200 flex flex-col">
+                  <span id="tele-v-lbl" class="text-slate-500 font-medium">Potential (<span class="math-font">V = -GM/r</span>)</span>
+                  <span id="tele-v" class="text-sky-700 font-mono font-bold text-sm tabular-nums">-0.00 MJ/kg</span>
+                  <span id="tele-v-j" class="text-[10px] text-slate-500 font-mono">-0.00 × 10⁶ J/kg</span>
+                </div>
+                <!-- E -->
+                <div class="p-2 bg-slate-50 rounded border border-slate-200 flex flex-col">
+                  <span id="tele-e-lbl" class="text-slate-500 font-medium">Field (<span class="math-font">E = GM/r²</span>)</span>
+                  <span id="tele-e" class="text-rose-700 font-mono font-bold text-sm tabular-nums">0.00 N/kg</span>
+                  <span id="tele-e-unit" class="text-[10px] text-slate-500 font-mono">N/kg = m/s² (Field intensity)</span>
+                </div>
+                <!-- Gradient -->
+                <div class="p-2 bg-slate-50 rounded border border-slate-200 flex flex-col">
+                  <span id="tele-grad-lbl" class="text-slate-500 font-medium">Gradient (<span class="math-font">∇V = dV/dr</span>)</span>
+                  <span id="tele-grad" class="text-emerald-700 font-mono font-bold text-sm tabular-nums">+0.00 N/kg</span>
+                  <span id="tele-grad-dir" class="text-[10px] text-slate-500 font-mono">Points outward (Uphill)</span>
+                </div>
+              </div>
+
+              <!-- Vector Angle & Work Check -->
+              <div class="p-2.5 bg-slate-100/70 rounded-lg text-xs flex flex-col gap-1 text-slate-700">
+                <div class="flex items-center justify-between">
+                  <span id="tele-angle-lbl">Angle between <span class="font-bold text-rose-700">E</span> and <span class="font-bold text-emerald-700">∇V</span>:</span>
+                  <span id="tele-angle-val" class="font-mono font-bold text-slate-900">180.0° (Antiparallel)</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span id="tele-work-lbl">Work along Equipotential Line (<span class="math-font">W = m·ΔV</span>):</span>
+                  <span id="tele-work-val" class="font-mono font-bold text-emerald-700">0.000 J (Zero Work)</span>
+                </div>
+              </div>
+
+              <!-- Controls Sliders for Mass and Probe -->
+              <div class="pt-2 border-t border-slate-100 flex flex-col gap-3">
+                <!-- Planet Mass Slider -->
+                <div>
+                  <div class="flex items-center justify-between text-xs mb-1">
+                    <span id="lbl-mass-title" class="text-slate-700 font-medium">Central Mass (<span class="math-font">M</span>):</span>
+                    <span id="label-mass" class="font-mono font-bold text-slate-900">5.97 × 10²⁴ kg</span>
+                  </div>
+                  <input type="range" id="slider-mass" min="22" max="26" step="0.05" value="24.776" oninput="onMassChange(this.value)" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                  <div class="flex justify-between text-[10px] text-slate-400 font-mono mt-0.5">
+                    <span>10²² kg (Moon)</span>
+                    <span>10²⁴ kg (Earth)</span>
+                    <span>10²⁶ kg (Gas Giant)</span>
+                  </div>
+                </div>
+
+                <!-- Probe Mass Slider -->
+                <div>
+                  <div class="flex items-center justify-between text-xs mb-1">
+                    <span id="lbl-probe-mass-title" class="text-slate-700 font-medium">Test Probe Mass (<span class="math-font">m</span>):</span>
+                    <span id="label-probe-mass" class="font-mono font-bold text-slate-900">100 kg</span>
+                  </div>
+                  <input type="range" id="slider-probe-mass" min="10" max="1000" step="10" value="100" oninput="onProbeMassChange(this.value)" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- MODULE 2: SPHERICAL SHELLS, SOLID SPHERES & CONCENTRIC SHELLS -->
+      <!-- ========================================================================= -->
+      <section id="module-2-section" class="hidden flex flex-col gap-6">
+
+        <!-- Module Header & Mode Switcher (Kicker removed) -->
+        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 id="mod2-title" class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+              Gravitational Mechanics of Solid Spheres & Hollow Shells
+            </h1>
+            <p id="mod2-desc" class="text-xs sm:text-sm text-slate-600 mt-1.5 max-w-3xl leading-relaxed">
+              Inside a uniform solid sphere, gravitational field increases linearly with distance (<span class="font-medium text-slate-800">E ∝ r</span>) and vanishes at the center (<span class="font-medium text-slate-800">E = 0</span>). Inside a hollow shell, field intensity is zero (<span class="font-medium text-slate-800">E = 0</span>) everywhere, while potential remains constant and equal to the surface value (<span class="font-medium text-slate-800">V = -GM/R</span>).
+            </p>
+          </div>
+
+          <!-- 3 Physical Mode Selector Buttons -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 p-1 bg-slate-100 rounded-lg shrink-0">
+            <button id="mod2-mode-a" onclick="setMod2Mode('solid')" class="px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap bg-white text-slate-900 shadow-sm">
+              Mode A: Solid Sphere
+            </button>
+            <button id="mod2-mode-b" onclick="setMod2Mode('hollow')" class="px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap text-slate-600 hover:text-slate-900">
+              Mode B: Hollow Shell
+            </button>
+            <button id="mod2-mode-c" onclick="setMod2Mode('concentric')" class="px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap text-slate-600 hover:text-slate-900">
+              Mode C: Concentric Shells
+            </button>
+          </div>
+        </div>
+
+        <!-- 2-Zone Sandbox: Cross Section Canvas (Top/Left) + Dual Synchronized Graphs (Bottom/Right) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          <!-- Cross-Section Canvas & Controls (5 cols on Desktop) -->
+          <div class="lg:col-span-5 bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col gap-4">
+            <div class="flex items-center justify-between pb-1 border-b border-slate-100">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                <h3 id="mod2-cross-title" class="text-sm font-bold text-slate-800">Dynamic Cross-Section View</h3>
+              </div>
+              <span id="mod2-zone-tag" class="text-xs font-semibold px-2 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200">
+                Inside Core (r &lt; R)
+              </span>
+            </div>
+
+            <!-- Canvas Container -->
+            <div class="relative w-full h-[380px] sm:h-[440px] xl:h-[480px] bg-slate-900 rounded-lg overflow-hidden cursor-ew-resize border border-slate-800">
+              <canvas id="mod2-canvas" class="w-full h-full block"></canvas>
+
+              <!-- Radial position indicator bar at top -->
+              <div class="absolute top-2 left-2 right-2 bg-slate-900/80 backdrop-blur border border-slate-700/70 rounded px-2.5 py-1 text-slate-200 text-xs flex items-center justify-between pointer-events-none">
+                <span>Radial Distance: <strong id="mod2-r-text" class="text-sky-300 font-mono">r = 3,200 km</strong></span>
+                <span id="mod2-r-ratio" class="text-slate-400 font-mono">r = 0.50 R</span>
+              </div>
+            </div>
+
+            <p id="mod2-cross-hint" class="text-xs text-slate-500">
+              💡 <strong>Interactive:</strong> Drag the test probe along the horizontal axis to cross between the interior, boundary, and outer space.
+            </p>
+
+            <!-- Mode-Specific Parameters Sliders -->
+            <div id="mod2-controls" class="flex flex-col gap-3 pt-2 border-t border-slate-100">
+              
+              <!-- Solid / Hollow Sphere Controls -->
+              <div id="controls-single" class="flex flex-col gap-3">
+                <div>
+                  <div class="flex items-center justify-between text-xs mb-1">
+                    <span id="lbl-m2-r-title" class="text-slate-700 font-medium">Sphere Radius (<span class="math-font">R</span>):</span>
+                    <span id="label-m2-r" class="font-mono font-bold text-slate-900">6,400 km</span>
+                  </div>
+                  <input type="range" id="slider-m2-r" min="2000" max="10000" step="100" value="6400" oninput="onMod2RadiusChange(this.value)" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <div>
+                  <div class="flex items-center justify-between text-xs mb-1">
+                    <span id="lbl-m2-m-title" class="text-slate-700 font-medium">Sphere Mass (<span class="math-font">M</span>):</span>
+                    <span id="label-m2-m" class="font-mono font-bold text-slate-900">6.0 × 10²⁴ kg</span>
+                  </div>
+                  <input type="range" id="slider-m2-m" min="22" max="25.5" step="0.05" value="24.778" oninput="onMod2MassChange(this.value)" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+              </div>
+
+              <!-- Concentric Shells Controls (Hidden by default) -->
+              <div id="controls-concentric" class="hidden flex flex-col gap-3">
+                <div>
+                  <div class="flex items-center justify-between text-xs mb-1">
+                    <span id="lbl-m2-r1-title" class="text-slate-700 font-medium">Inner Shell Radius (<span class="math-font">R₁</span>) & Mass (<span class="math-font">M₁</span>):</span>
+                    <span id="label-m2-r1" class="font-mono font-bold text-sky-700">3,000 km | 2.0 × 10²⁴ kg</span>
+                  </div>
+                  <input type="range" id="slider-m2-r1" min="1500" max="5000" step="100" value="3000" oninput="onMod2ConcentricChange()" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <div>
+                  <div class="flex items-center justify-between text-xs mb-1">
+                    <span id="lbl-m2-r2-title" class="text-slate-700 font-medium">Outer Shell Radius (<span class="math-font">R₂</span>) & Mass (<span class="math-font">M₂</span>):</span>
+                    <span id="label-m2-r2" class="font-mono font-bold text-amber-700">7,000 km | 4.0 × 10²⁴ kg</span>
+                  </div>
+                  <input type="range" id="slider-m2-r2" min="5500" max="10000" step="100" value="7000" oninput="onMod2ConcentricChange()" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Mathematical Formulation Summary for Active Mode -->
+            <div id="mod2-formula-card" class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs flex flex-col gap-2">
+              <span id="mod2-formula-heading" class="font-bold text-slate-800 border-b border-slate-200 pb-1">Governing Physical Formulas</span>
+              <div id="mod2-formula-content" class="text-slate-700 leading-relaxed font-mono">
+                <!-- Dynamically filled with formulas -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Dual Synchronized Real-Time Interactive Graphs (7 cols on Desktop) -->
+          <div class="lg:col-span-7 flex flex-col gap-4">
+
+            <!-- Graph 1: E vs r -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col gap-2">
+              <div class="flex items-center justify-between pb-1 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                  <h3 id="mod2-graph1-title" class="text-sm font-bold text-slate-800">Gravitational Field Intensity: <span class="math-font">E(r) vs r</span></h3>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-mono font-bold text-rose-600 tabular-nums" id="live-graph-e">E = 0.00 N/kg</span>
+                </div>
+              </div>
+
+              <!-- Canvas for E vs r -->
+              <div class="relative w-full h-[220px] sm:h-[250px] bg-slate-50 rounded-lg border border-slate-200 overflow-hidden">
+                <canvas id="mod2-graph-e" class="w-full h-full block"></canvas>
+              </div>
+              <div class="flex justify-between items-center text-[11px] text-slate-500 px-1">
+                <span id="desc-graph-e-left">Inside: E ∝ r (Solid) or E = 0 (Hollow)</span>
+                <span class="font-semibold text-slate-700">Boundary r = R</span>
+                <span>Outside: E ∝ 1/r²</span>
+              </div>
+            </div>
+
+            <!-- Graph 2: V vs r -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col gap-2">
+              <div class="flex items-center justify-between pb-1 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                  <h3 id="mod2-graph2-title" class="text-sm font-bold text-slate-800">Gravitational Potential: <span class="math-font">V(r) vs r</span></h3>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-mono font-bold text-sky-700 tabular-nums" id="live-graph-v">V = -0.00 MJ/kg</span>
+                </div>
+              </div>
+
+              <!-- Canvas for V vs r -->
+              <div class="relative w-full h-[220px] sm:h-[250px] bg-slate-50 rounded-lg border border-slate-200 overflow-hidden">
+                <canvas id="mod2-graph-v" class="w-full h-full block"></canvas>
+              </div>
+              <div class="flex justify-between items-center text-[11px] text-slate-500 px-1">
+                <span id="desc-graph-v-left">Inside: Parabolic (Solid) or Flat (Hollow)</span>
+                <span class="font-semibold text-slate-700">Continuous V(R)</span>
+                <span>Outside: V ∝ -1/r</span>
+              </div>
+            </div>
+
+            <!-- Key Insight Special Insight Tip Card -->
+            <div class="bg-amber-50/70 border border-amber-200/90 rounded-xl p-3.5 text-xs text-amber-950 flex gap-3 items-start">
+              <div class="w-6 h-6 rounded bg-amber-200 text-amber-900 font-bold flex items-center justify-center shrink-0">
+                💡
+              </div>
+              <div class="flex flex-col gap-1">
+                <strong class="font-semibold text-amber-900" id="tip-title">Core Physical Insight (Center of Solid Sphere):</strong>
+                <p class="text-amber-900/90 leading-relaxed" id="tip-body">
+                  At the center of a solid sphere, the gravitational field vanishes (<span class="font-mono">E = 0</span>), but gravitational potential reaches its deepest minimum at 1.5 times the surface potential: <span class="font-mono">V(0) = -1.5 GM/R = 1.5 V_surface</span>.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- FOOTER (Full Width) -->
+    <footer class="bg-white border-t border-slate-200 mt-auto py-3 px-3 sm:px-6 text-xs text-slate-500">
+      <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-red-100 text-red-700 font-extrabold text-[11px]">উদ্ভাস | UDVASH</span>
+          <span>HSC Physics Gravitational Mechanics Simulation · Interactive Vector & Potential Laboratory</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <span>G = 6.6743 × 10⁻¹¹ N·m²/kg²</span>
+          <span>·</span>
+          <span>Full-Page Interactive Edition</span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- FORMULA REFERENCE MODAL -->
+    <div id="formula-modal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden flex items-center justify-center p-4">
+      <div class="bg-white rounded-xl border border-slate-200 shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 flex flex-col gap-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h3 class="text-lg font-bold text-slate-900">HSC Physics: Gravitational Formulas Summary</h3>
+          <button onclick="closeFormulaModal()" class="text-slate-400 hover:text-slate-700 text-lg font-bold p-1">✕</button>
+        </div>
+
+        <div class="space-y-4 text-xs text-slate-700">
+          <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+            <h4 class="font-bold text-slate-900 mb-1 text-sm">1. Potential Gradient Relation (বিভব নতিমাত্রা সম্পর্ক)</h4>
+            <p class="leading-relaxed">
+              <strong>Vector form:</strong> <span class="font-mono text-emerald-700 font-bold">E = -∇V = - (∂V/∂r) r̂</span><br>
+              <strong>1D Radial form:</strong> <span class="font-mono text-rose-700 font-bold">E = - dV/dr</span><br>
+              <strong>Interpretation:</strong> The negative sign denotes that the gravitational field acts in the direction of greatest decrease of gravitational potential (i.e. toward the mass).
+            </p>
+          </div>
+
+          <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+            <h4 class="font-bold text-slate-900 mb-1 text-sm">2. Thin Hollow Spherical Shell (পাতলা ফাঁপা গোলক)</h4>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>Inside (<span class="math-font">r &lt; R</span>): <span class="font-mono font-semibold">E = 0</span>, <span class="font-mono font-semibold">V = -GM/R (Constant)</span></li>
+              <li>Surface (<span class="math-font">r = R</span>): <span class="font-mono font-semibold">E = GM/R²</span>, <span class="font-mono font-semibold">V = -GM/R</span></li>
+              <li>Outside (<span class="math-font">r &gt; R</span>): <span class="font-mono font-semibold">E = GM/r²</span>, <span class="font-mono font-semibold">V = -GM/r</span></li>
+            </ul>
+          </div>
+
+          <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+            <h4 class="font-bold text-slate-900 mb-1 text-sm">3. Uniform Solid Sphere (সুষম নিরেট গোলক)</h4>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>Inside (<span class="math-font">r ≤ R</span>): <span class="font-mono font-semibold">E = (GM/R³) r</span>, <span class="font-mono font-semibold">V = -(GM/2R³)(3R² - r²)</span></li>
+              <li>Center (<span class="math-font">r = 0</span>): <span class="font-mono font-semibold">E = 0</span>, <span class="font-mono font-semibold text-rose-700">V = -1.5 (GM/R) = 1.5 V_surface</span></li>
+              <li>Outside (<span class="math-font">r &gt; R</span>): <span class="font-mono font-semibold">E = GM/r²</span>, <span class="font-mono font-semibold">V = -GM/r</span></li>
+            </ul>
+          </div>
+
+          <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+            <h4 class="font-bold text-slate-900 mb-1 text-sm">4. Superposition in Concentric Shells (সমকেন্দ্রিক গোলকদ্বয়)</h4>
+            <p class="leading-relaxed">
+              For inner shell (<span class="math-font">M₁, R₁</span>) and outer shell (<span class="math-font">M₂, R₂</span>):<br>
+              In cavity (<span class="math-font">r &lt; R₁</span>): <span class="font-mono">E = 0</span>, <span class="font-mono">V = -GM₁/R₁ - GM₂/R₂</span><br>
+              Between shells (<span class="math-font">R₁ ≤ r &lt; R₂</span>): <span class="font-mono">E = GM₁/r²</span>, <span class="font-mono">V = -GM₁/r - GM₂/R₂</span><br>
+              Outside (<span class="math-font">r ≥ R₂</span>): <span class="font-mono">E = G(M₁+M₂)/r²</span>, <span class="font-mono">V = -G(M₁+M₂)/r</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-2 border-t border-slate-100">
+          <button onclick="closeFormulaModal()" class="px-4 py-2 text-xs font-semibold bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors">
+            Close Reference
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PURE VANILLA JAVASCRIPT PHYSICS SIMULATION ENGINE -->
+    <script>
+      // ==========================================
+      // CONSTANTS & AUDIO ENGINE
+      // ==========================================
+      const G = 6.67430e-11; // Gravitational constant N·m²/kg²
+      let soundEnabled = true;
+      let audioCtx = null;
+
+      function initAudio() {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      }
+
+      function playTone(freq, type = 'sine', duration = 0.08, vol = 0.05) {
+        if (!soundEnabled) return;
+        try {
+          initAudio();
+          if (audioCtx.state === 'suspended') audioCtx.resume();
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + duration);
+        } catch (e) {}
+      }
+
+      function toggleAudio() {
+        soundEnabled = !soundEnabled;
+        document.getElementById('icon-sound-on').classList.toggle('hidden', !soundEnabled);
+        document.getElementById('icon-sound-off').classList.toggle('hidden', soundEnabled);
+        if (soundEnabled) playTone(580, 'sine', 0.1, 0.06);
+      }
+
+      function openFormulaModal() {
+        document.getElementById('formula-modal').classList.remove('hidden');
+      }
+      function closeFormulaModal() {
+        document.getElementById('formula-modal').classList.add('hidden');
+      }
+
+      // ==========================================
+      // INTERNATIONALIZATION (i18n): ENGLISH & BENGALI
+      // ==========================================
+      let currentLang = 'bn';
+
+      const i18n = {
+        en: {
+          appSubtitle: "Gravitational Potential & Field Simulation · HSC Physics",
+          tabMod1: 'Module 1: Potential Gradient (<span class="math-font">E = -∇V</span>)',
+          tabMod2: 'Module 2: Shells & Spheres (<span class="math-font">Mechanics</span>)',
+          btnFormula: 'Formula Sheet',
+          lblPresets: 'Presets:',
+          presetEarth: 'Earth',
+          presetMoon: 'Moon',
+          presetMars: 'Mars',
+          presetHeavy: 'Heavy Planet',
+          mod1Title: 'Gravitational Potential Gradient & Field Relation (<span class="math-font">E = -dV/dr</span>)',
+          mod1Desc: 'Gravitational field intensity is the negative spatial derivative of gravitational potential with distance (<span class="font-medium text-slate-800">E = -dV/dr = -∇V</span>). The potential gradient vector <span class="font-semibold text-emerald-700">∇V</span> points uphill toward higher potential (outward), whereas the gravitational field <span class="font-semibold text-rose-700">E</span> always acts downhill toward decreasing potential (inward to center).',
+          mod1CanvasTitle: '2D Equipotential & Vector Field',
+          mod1CanvasHint: 'Drag probe to inspect · Observe orthogonal vectors',
+          chkGrad: '∇V Gradient',
+          chkField: 'E Field (-∇V)',
+          chkTangent: 'Equipotential Tangent',
+          chkOrtho: '90° Orthogonal Box',
+          chkContours: 'Contour Labels',
+          btnRelease: 'Release Test Particle (Free Fall)',
+          btnResetProbe: 'Reset Probe Position',
+          mod1GraphTitle: 'Potential Curve Slope & Tangent: <span class="math-font">E = -dV/dr</span>',
+          mod1GraphDesc: 'The negative tangent slope <span class="math-font">-dV/dr</span> at probe distance r equals field magnitude <span class="math-font">E</span>.',
+          mod1OrthoNote: 'Vector Orthogonality Confirmation',
+          telemetryTitle: 'Real-Time Telemetry',
+          telemetrySub: 'Dynamic Vector & Calculus Verification',
+          teleRLbl: 'Radial Distance (<span class="math-font">r</span>):',
+          teleVLbl: 'Gravitational Potential (<span class="math-font">V</span>):',
+          teleELbl: 'Field Intensity (<span class="math-font">E</span>):',
+          teleEUnit: 'N/kg (downhill)',
+          teleGradLbl: 'Gradient Vector (<span class="math-font">∇V</span>):',
+          teleGradDir: 'uphill (+r direction)',
+          teleAngleLbl: 'Angle Between <span class="math-font">E</span> and <span class="math-font">∇V</span>:',
+          teleAngleVal: '180.0° (Opposite)',
+          teleWorkLbl: 'Equipotential Work (<span class="math-font">W</span>):',
+          teleWorkVal: '0.00 J (Zero Work)',
+          lblMassTitle: 'Central Planet Mass (<span class="math-font">M</span>):',
+          lblProbeMassTitle: 'Test Probe Mass (<span class="math-font">m</span>):',
+          mod2Title: 'Gravitational Mechanics of Solid Spheres & Hollow Shells',
+          mod2Desc: 'Inside a uniform solid sphere, gravitational field increases linearly with distance (<span class="font-medium text-slate-800">E ∝ r</span>) and vanishes at the center (<span class="font-medium text-slate-800">E = 0</span>). Inside a hollow shell, field intensity is zero (<span class="font-medium text-slate-800">E = 0</span>) everywhere, while potential remains constant and equal to the surface value (<span class="font-medium text-slate-800">V = -GM/R</span>).',
+          mod2ModeA: 'Mode A: Solid Sphere',
+          mod2ModeB: 'Mode B: Hollow Shell',
+          mod2ModeC: 'Mode C: Concentric Shells',
+          mod2CrossTitle: 'Cross-Sectional Interactive View',
+          mod2CrossHint: 'Drag test probe horizontally along radial axis',
+          lblM2RTitle: 'Sphere Radius (<span class="math-font">R</span>):',
+          lblM2MTitle: 'Sphere Mass (<span class="math-font">M</span>):',
+          lblM2R1Title: 'Inner Shell Radius (<span class="math-font">R₁</span>) & Mass (<span class="math-font">M₁</span>):',
+          lblM2R2Title: 'Outer Shell Radius (<span class="math-font">R₂</span>) & Mass (<span class="math-font">M₂</span>):',
+          mod2FormulaHeading: 'Governing Physical Formulas',
+          mod2Graph1Title: 'Gravitational Field Intensity: <span class="math-font">E(r) vs r</span>',
+          mod2Graph2Title: 'Gravitational Potential: <span class="math-font">V(r) vs r</span>',
+        },
+        bn: {
+          appSubtitle: "মহাকর্ষীয় প্রাবল্য ও বিভব সিমুলেশন · HSC Physics",
+          tabMod1: 'মডিউল ১: বিভব নতিমাত্রা (<span class="math-font">E = -∇V</span>)',
+          tabMod2: 'মডিউল ২: ফাঁপা ও নিরেট গোলক (<span class="math-font">মেকানিক্স</span>)',
+          btnFormula: 'সূত্র তালিকা',
+          lblPresets: 'প্রিসেট:',
+          presetEarth: 'পৃথিবী',
+          presetMoon: 'চাঁদ',
+          presetMars: 'মঙ্গল',
+          presetHeavy: 'ভারী গ্রহ',
+          mod1Title: 'মহাকর্ষীয় বিভব নতিমাত্রা ও প্রাবল্য সম্পর্ক (<span class="math-font">E = -dV/dr</span>)',
+          mod1Desc: 'মহাকর্ষীয় প্রাবল্য হলো দূরত্বের সাথে বিভবের পরিবর্তনের ঋণাত্মক হার (<span class="font-medium text-slate-800">E = -dV/dr = -∇V</span>)। বিভব নতিমাত্রা ভেক্টর <span class="font-semibold text-emerald-700">∇V</span> সর্বদা উচ্চ বিভবের দিকে নির্দেশ করে (বহির্মুখী), আর মহাকর্ষীয় প্রাবল্য <span class="font-semibold text-rose-700">E</span> সর্বদা বিভব হ্রাসের দিকে কেন্দ্রের দিকে ক্রিয়া করে।',
+          mod1CanvasTitle: 'দ্বিমাত্রিক সমবিভব তল ও ভেক্টর ক্ষেত্র',
+          mod1CanvasHint: 'প্রোব ড্র্যাগ করুন · লম্ব ভেক্টর পর্যবেক্ষণ করুন',
+          chkGrad: '∇V নতিমাত্রা',
+          chkField: 'E প্রাবল্য (-∇V)',
+          chkTangent: 'সমবিভব স্পর্শক',
+          chkOrtho: '৯০° লম্ব নির্দেশক',
+          chkContours: 'বিভবের মান প্রদর্শন',
+          btnRelease: 'টেস্ট কণা ছেড়ে দিন (মুক্ত পতন)',
+          btnResetProbe: 'প্রোব অবস্থান রিসেট',
+          mod1GraphTitle: 'বিভব বক্ররেখার ঢাল ও স্পর্শক: <span class="math-font">E = -dV/dr</span>',
+          mod1GraphDesc: 'প্রোবের দূরত্ব r-এ স্পর্শকের ঋণাত্মক ঢাল <span class="math-font">-dV/dr</span> প্রাবল্যের মান <span class="math-font">E</span> এর সমান।',
+          mod1OrthoNote: 'ভেক্টরের লম্বতা নিশ্চিতকরণ',
+          telemetryTitle: 'লাইভ পরিমাপ ও টেলিমিতি',
+          telemetrySub: 'ক্যালকুলাস ও ভেক্টর বিশ্লেষণ',
+          teleRLbl: 'ব্যাসার্ধীয় দূরত্ব (<span class="math-font">r</span>):',
+          teleVLbl: 'মহাকর্ষীয় বিভব (<span class="math-font">V</span>):',
+          teleELbl: 'মহাকর্ষীয় প্রাবল্য (<span class="math-font">E</span>):',
+          teleEUnit: 'N/kg (কেন্দ্রাভিমুখী)',
+          teleGradLbl: 'নতিমাত্রা ভেক্টর (<span class="math-font">∇V</span>):',
+          teleGradDir: 'উর্ধ্বমুখী (+r দিক)',
+          teleAngleLbl: '<span class="math-font">E</span> ও <span class="math-font">∇V</span> এর মধ্যবর্তী কোণ:',
+          teleAngleVal: '১৮০.০° (বিপরীতমুখী)',
+          teleWorkLbl: 'সমবিভব তলে কাজ (<span class="math-font">W</span>):',
+          teleWorkVal: '০.০০ জুল (কাজ শূন্য)',
+          lblMassTitle: 'কেন্দ্রীয় গ্রহের ভর (<span class="math-font">M</span>):',
+          lblProbeMassTitle: 'টেস্ট প্রোবের ভর (<span class="math-font">m</span>):',
+          mod2Title: 'ফাঁপা ও নিরেট গোলকের মহাকর্ষীয় মেকানিক্স',
+          mod2Desc: 'সুষম নিরেট গোলকের অভ্যন্তরে মহাকর্ষীয় প্রাবল্য দূরত্বের সমানুপাতিক (<span class="font-medium text-slate-800">E ∝ r</span>) এবং কেন্দ্রে শূন্য (<span class="font-medium text-slate-800">E = 0</span>)। পাতলা ফাঁপা গোলকের অভ্যন্তরে প্রাবল্য শূন্য (<span class="font-medium text-slate-800">E = 0</span>) এবং বিভব সর্বদা পৃষ্ঠের বিভবের সমান ও ধ্রুবক (<span class="font-medium text-slate-800">V = -GM/R</span>)।',
+          mod2ModeA: 'মোড A: নিরেট গোলক',
+          mod2ModeB: 'মোড B: ফাঁপা গোলক',
+          mod2ModeC: 'মোড C: সমকেন্দ্রিক গোলকদ্বয়',
+          mod2CrossTitle: 'ছেদদৃশ্যের ইন্টারেক্টিভ ক্যানভাস',
+          mod2CrossHint: 'ব্যাসার্ধ অক্ষ বরাবর টেস্ট প্রোবটি ড্র্যাগ করুন',
+          lblM2RTitle: 'গোলকের ব্যাসার্ধ (<span class="math-font">R</span>):',
+          lblM2MTitle: 'গোলকের ভর (<span class="math-font">M</span>):',
+          lblM2R1Title: 'ভেতরের গোলকের ব্যাসার্ধ (<span class="math-font">R₁</span>) ও ভর (<span class="math-font">M₁</span>):',
+          lblM2R2Title: 'বাইরের গোলকের ব্যাসার্ধ (<span class="math-font">R₂</span>) ও ভর (<span class="math-font">M₂</span>):',
+          mod2FormulaHeading: 'প্রযোজ্য পদার্থবিজ্ঞান সূত্রাবলি',
+          mod2Graph1Title: 'মহাকর্ষীয় প্রাবল্যের পরিবর্তন: <span class="math-font">E(r) vs r</span>',
+          mod2Graph2Title: 'মহাকর্ষীয় বিভবের পরিবর্তন: <span class="math-font">V(r) vs r</span>',
+        }
+      };
+
+      function setLanguage(lang) {
+        currentLang = lang;
+        const dict = i18n[lang];
+
+        // Language buttons UI
+        const btnEn = document.getElementById('lang-btn-en');
+        const btnBn = document.getElementById('lang-btn-bn');
+        if (lang === 'en') {
+          btnEn.className = "px-2.5 py-1 rounded-md transition-all bg-white text-slate-900 shadow-xs font-bold";
+          btnBn.className = "px-2.5 py-1 rounded-md transition-all text-slate-600 hover:text-slate-900 font-medium";
+        } else {
+          btnBn.className = "px-2.5 py-1 rounded-md transition-all bg-white text-slate-900 shadow-xs font-bold";
+          btnEn.className = "px-2.5 py-1 rounded-md transition-all text-slate-600 hover:text-slate-900 font-medium";
+        }
+
+        const setHtml = (id, html) => {
+          const el = document.getElementById(id);
+          if (el && html !== undefined) el.innerHTML = html;
+        };
+
+        setHtml('app-subtitle', dict.appSubtitle);
+        setHtml('tab-mod1', dict.tabMod1);
+        setHtml('tab-mod2', dict.tabMod2);
+        setHtml('btn-formula-sheet', dict.btnFormula);
+        setHtml('lbl-presets', dict.lblPresets);
+        setHtml('btn-preset-earth', dict.presetEarth);
+        setHtml('btn-preset-moon', dict.presetMoon);
+        setHtml('btn-preset-mars', dict.presetMars);
+        setHtml('btn-preset-heavy', dict.presetHeavy);
+
+        setHtml('mod1-title', dict.mod1Title);
+        setHtml('mod1-desc', dict.mod1Desc);
+        setHtml('mod1-canvas-title', dict.mod1CanvasTitle);
+        setHtml('mod1-canvas-hint', dict.mod1CanvasHint);
+        setHtml('chk-gradient-lbl', dict.chkGrad);
+        setHtml('chk-field-lbl', dict.chkField);
+        setHtml('chk-tangent-lbl', dict.chkTangent);
+        setHtml('chk-ortho-lbl', dict.chkOrtho);
+        setHtml('chk-contours-lbl', dict.chkContours);
+        if (!mod1.isDropping) {
+          setHtml('btn-release-text', dict.btnRelease);
+        }
+        setHtml('btn-reset-probe', dict.btnResetProbe);
+        setHtml('mod1-graph-title', dict.mod1GraphTitle);
+        setHtml('mod1-graph-desc', dict.mod1GraphDesc);
+        setHtml('mod1-ortho-note', dict.mod1OrthoNote);
+
+        setHtml('telemetry-title', dict.telemetryTitle);
+        setHtml('telemetry-sub', dict.telemetrySub);
+        setHtml('tele-r-lbl', dict.teleRLbl);
+        setHtml('tele-v-lbl', dict.teleVLbl);
+        setHtml('tele-e-lbl', dict.teleELbl);
+        setHtml('tele-e-unit', dict.teleEUnit);
+        setHtml('tele-grad-lbl', dict.teleGradLbl);
+        setHtml('tele-grad-dir', dict.teleGradDir);
+        setHtml('tele-angle-lbl', dict.teleAngleLbl);
+        setHtml('tele-angle-val', dict.teleAngleVal);
+        setHtml('tele-work-lbl', dict.teleWorkLbl);
+        setHtml('tele-work-val', dict.teleWorkVal);
+
+        setHtml('lbl-mass-title', dict.lblMassTitle);
+        setHtml('lbl-probe-mass-title', dict.lblProbeMassTitle);
+
+        setHtml('mod2-title', dict.mod2Title);
+        setHtml('mod2-desc', dict.mod2Desc);
+        setHtml('mod2-mode-a', dict.mod2ModeA);
+        setHtml('mod2-mode-b', dict.mod2ModeB);
+        setHtml('mod2-mode-c', dict.mod2ModeC);
+        setHtml('mod2-cross-title', dict.mod2CrossTitle);
+        setHtml('mod2-cross-hint', dict.mod2CrossHint);
+        setHtml('lbl-m2-r-title', dict.lblM2RTitle);
+        setHtml('lbl-m2-m-title', dict.lblM2MTitle);
+        setHtml('lbl-m2-r1-title', dict.lblM2R1Title);
+        setHtml('lbl-m2-r2-title', dict.lblM2R2Title);
+        setHtml('mod2-formula-heading', dict.mod2FormulaHeading);
+        setHtml('mod2-graph1-title', dict.mod2Graph1Title);
+        setHtml('mod2-graph2-title', dict.mod2Graph2Title);
+
+        updateMod2FormulaDisplay();
+        if (activeModule === 1) {
+          drawMod1();
+          drawMod1Graph();
+        } else {
+          drawMod2();
+          drawMod2Graphs();
+        }
+      }
+
+      // ==========================================
+      // MODULE SWITCHER
+      // ==========================================
+      let activeModule = 1;
+
+      function switchModule(modNum) {
+        activeModule = modNum;
+        
+        // Tab styling
+        const t1 = document.getElementById('tab-mod1');
+        const t2 = document.getElementById('tab-mod2');
+
+        const activeClass = "px-3 sm:px-4 py-1.5 rounded-md transition-all whitespace-nowrap bg-white text-slate-900 shadow-sm font-semibold";
+        const inactiveClass = "px-3 sm:px-4 py-1.5 rounded-md transition-all whitespace-nowrap text-slate-600 hover:text-slate-900 font-medium";
+
+        t1.className = modNum === 1 ? activeClass : inactiveClass;
+        t2.className = modNum === 2 ? activeClass : inactiveClass;
+
+        // Sections
+        document.getElementById('module-1-section').classList.toggle('hidden', modNum !== 1);
+        document.getElementById('module-2-section').classList.toggle('hidden', modNum !== 2);
+
+        if (modNum === 1) {
+          resizeMod1Canvases();
+          drawMod1();
+          drawMod1Graph();
+        } else if (modNum === 2) {
+          resizeMod2Canvases();
+          drawMod2();
+          drawMod2Graphs();
+        }
+        playTone(440, 'triangle', 0.05, 0.04);
+      }
+
+      // ==========================================
+      // MODULE 1: POTENTIAL GRADIENT SIMULATOR
+      // ==========================================
+      const mod1 = {
+        mass: 5.972e24, // Earth mass kg
+        probeMass: 100, // kg
+        planetRadiusKm: 6371, // km
+        // Viewport scale: pixels per km
+        scale: 0.007, 
+        center: { x: 0, y: 0 },
+        // Probe in real km coordinates relative to planet center
+        probe: { x: 12000, y: -9000 },
+        isDragging: false,
+        // Particle dropping physics
+        isDropping: false,
+        particleVel: { x: 0, y: 0 },
+        particlePos: { x: 0, y: 0 },
+        dropTrail: [],
+        animFrameId: null,
+      };
+
+      const mod1Canvas = document.getElementById('mod1-canvas');
+      const mod1Ctx = mod1Canvas.getContext('2d');
+      const mod1GraphCanvas = document.getElementById('mod1-graph');
+      const mod1GraphCtx = mod1GraphCanvas.getContext('2d');
+
+      function resizeMod1Canvases() {
+        const dpr = window.devicePixelRatio || 1;
+        // 2D canvas
+        const rect1 = mod1Canvas.parentElement.getBoundingClientRect();
+        mod1Canvas.width = rect1.width * dpr;
+        mod1Canvas.height = rect1.height * dpr;
+        mod1Ctx.scale(dpr, dpr);
+        mod1.center.x = rect1.width / 2;
+        mod1.center.y = rect1.height / 2;
+
+        // Scale dynamically so ~35,000 km fits across any screen dimension
+        mod1.scale = (Math.min(rect1.width, rect1.height) * 0.45) / 25000;
+
+        // 1D graph canvas
+        const rectG = mod1GraphCanvas.parentElement.getBoundingClientRect();
+        mod1GraphCanvas.width = rectG.width * dpr;
+        mod1GraphCanvas.height = rectG.height * dpr;
+        mod1GraphCtx.scale(dpr, dpr);
+      }
+
+      function onMassChange(val) {
+        mod1.mass = Math.pow(10, parseFloat(val));
+        const exp = Math.floor(Math.log10(mod1.mass));
+        const mantissa = (mod1.mass / Math.pow(10, exp)).toFixed(2);
+        document.getElementById('label-mass').textContent = `${mantissa} × 10²${exp - 20} kg`;
+        drawMod1();
+        drawMod1Graph();
+      }
+
+      function onProbeMassChange(val) {
+        mod1.probeMass = parseFloat(val);
+        document.getElementById('label-probe-mass').textContent = `${mod1.probeMass} kg`;
+        drawMod1();
+      }
+
+      function applyMod1Preset(preset) {
+        if (preset === 'earth') {
+          mod1.mass = 5.972e24;
+          mod1.planetRadiusKm = 6371;
+          document.getElementById('slider-mass').value = 24.776;
+        } else if (preset === 'moon') {
+          mod1.mass = 7.347e22;
+          mod1.planetRadiusKm = 1737;
+          document.getElementById('slider-mass').value = 22.866;
+        } else if (preset === 'mars') {
+          mod1.mass = 6.417e23;
+          mod1.planetRadiusKm = 3389;
+          document.getElementById('slider-mass').value = 23.807;
+        } else if (preset === 'heavy') {
+          mod1.mass = 1.0e26;
+          mod1.planetRadiusKm = 24000;
+          document.getElementById('slider-mass').value = 26.0;
+        }
+        onMassChange(document.getElementById('slider-mass').value);
+        playTone(520, 'sine', 0.08, 0.05);
+      }
+
+      function resetMod1Probe() {
+        mod1.isDropping = false;
+        mod1.dropTrail = [];
+        mod1.probe = { x: 14000, y: -10000 };
+        document.getElementById('particle-status').classList.add('hidden');
+        document.getElementById('btn-release-text').textContent = "Release Test Particle (মুক্তভাবে পতন)";
+        drawMod1();
+        drawMod1Graph();
+        playTone(330, 'triangle', 0.08, 0.05);
+      }
+
+      // Dragging Interaction
+      function setupMod1Events() {
+        const getCanvasCoord = (e) => {
+          const rect = mod1Canvas.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          return {
+            x: clientX - rect.left,
+            y: clientY - rect.top
+          };
+        };
+
+        const handleStart = (e) => {
+          const pt = getCanvasCoord(e);
+          // Probe screen position
+          const probeScreenX = mod1.center.x + mod1.probe.x * mod1.scale;
+          const probeScreenY = mod1.center.y + mod1.probe.y * mod1.scale;
+          const dist = Math.hypot(pt.x - probeScreenX, pt.y - probeScreenY);
+          if (dist < 30) {
+            mod1.isDragging = true;
+            if (mod1.isDropping) {
+              mod1.isDropping = false;
+              document.getElementById('particle-status').classList.add('hidden');
+              document.getElementById('btn-release-text').textContent = "Release Test Particle (মুক্তভাবে পতন)";
+            }
+          }
+        };
+
+        const handleMove = (e) => {
+          if (!mod1.isDragging) return;
+          const pt = getCanvasCoord(e);
+          // Convert screen to km
+          let kmX = (pt.x - mod1.center.x) / mod1.scale;
+          let kmY = (pt.y - mod1.center.y) / mod1.scale;
+          const rKm = Math.hypot(kmX, kmY);
+          // Keep outside surface
+          if (rKm < mod1.planetRadiusKm * 1.05) {
+            const factor = (mod1.planetRadiusKm * 1.05) / rKm;
+            kmX *= factor;
+            kmY *= factor;
+          }
+          mod1.probe.x = kmX;
+          mod1.probe.y = kmY;
+          drawMod1();
+          drawMod1Graph();
+        };
+
+        const handleEnd = () => {
+          if (mod1.isDragging) {
+            mod1.isDragging = false;
+            playTone(400, 'sine', 0.05, 0.03);
+          }
+        };
+
+        mod1Canvas.addEventListener('mousedown', handleStart);
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('mouseup', handleEnd);
+
+        mod1Canvas.addEventListener('touchstart', (e) => { e.preventDefault(); handleStart(e); }, { passive: false });
+        window.addEventListener('touchmove', handleMove, { passive: true });
+        window.addEventListener('touchend', handleEnd);
+      }
+
+      // Physics Loop for Dropping Particle
+      function toggleParticleDrop() {
+        if (mod1.isDropping) {
+          mod1.isDropping = false;
+          document.getElementById('particle-status').classList.add('hidden');
+          document.getElementById('btn-release-text').textContent = "Release Test Particle (মুক্তভাবে পতন)";
+          return;
+        }
+
+        mod1.isDropping = true;
+        mod1.particlePos = { ...mod1.probe };
+        mod1.particleVel = { x: 0, y: 0 };
+        mod1.dropTrail = [{ ...mod1.particlePos }];
+        document.getElementById('particle-status').classList.remove('hidden');
+        document.getElementById('btn-release-text').textContent = "Pause Particle (বিরতি)";
+        playTone(600, 'sine', 0.12, 0.08);
+
+        let lastTime = performance.now();
+
+        function dropStep(now) {
+          if (!mod1.isDropping) return;
+          const dt = Math.min((now - lastTime) / 1000, 0.05); // seconds
+          lastTime = now;
+
+          // Physics acceleration: a = GM / r² inward
+          const rKm = Math.hypot(mod1.particlePos.x, mod1.particlePos.y);
+          const rM = rKm * 1000;
+
+          if (rKm <= mod1.planetRadiusKm * 1.02) {
+            // Impact with planet surface
+            mod1.isDropping = false;
+            document.getElementById('particle-status').textContent = "Particle reached planet surface (পৃষ্ঠে পতিত)";
+            setTimeout(() => {
+              document.getElementById('particle-status').classList.add('hidden');
+              document.getElementById('btn-release-text').textContent = "Release Test Particle (মুক্তভাবে পতন)";
+            }, 2500);
+            playTone(180, 'sawtooth', 0.25, 0.1);
+            return;
+          }
+
+          const aM = (G * mod1.mass) / (rM * rM); // m/s²
+          const aKm = aM / 1000; // km/s²
+
+          // Simulation time acceleration factor for smooth real-time viewing
+          const simSpeed = 1200; 
+
+          const unitX = -mod1.particlePos.x / rKm;
+          const unitY = -mod1.particlePos.y / rKm;
+
+          mod1.particleVel.x += unitX * aKm * dt * simSpeed;
+          mod1.particleVel.y += unitY * aKm * dt * simSpeed;
+
+          mod1.particlePos.x += mod1.particleVel.x * dt * simSpeed;
+          mod1.particlePos.y += mod1.particleVel.y * dt * simSpeed;
+
+          mod1.probe.x = mod1.particlePos.x;
+          mod1.probe.y = mod1.particlePos.y;
+
+          mod1.dropTrail.push({ ...mod1.particlePos });
+          if (mod1.dropTrail.length > 80) mod1.dropTrail.shift();
+
+          drawMod1();
+          drawMod1Graph();
+
+          requestAnimationFrame(dropStep);
+        }
+
+        requestAnimationFrame(dropStep);
+      }
+
+      // Draw Module 1 2D Canvas
+      function drawMod1() {
+        const w = mod1Canvas.clientWidth;
+        const h = mod1Canvas.clientHeight;
+        const ctx = mod1Ctx;
+        ctx.clearRect(0, 0, w, h);
+
+        const cx = mod1.center.x;
+        const cy = mod1.center.y;
+        const scale = mod1.scale;
+
+        // Background space grid
+        ctx.strokeStyle = '#1E293B';
+        ctx.lineWidth = 0.5;
+        const gridStep = 40;
+        for (let x = 0; x < w; x += gridStep) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+        }
+        for (let y = 0; y < h; y += gridStep) {
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+        }
+
+        // Draw Equipotential Contour Rings
+        const showContours = document.getElementById('chk-contours').checked;
+        const contourDistancesKm = [8000, 11000, 15000, 20000, 26000, 33000];
+
+        contourDistancesKm.forEach((rKm) => {
+          const rPx = rKm * scale;
+          if (rPx < w * 0.9) {
+            ctx.beginPath();
+            ctx.arc(cx, cy, rPx, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(99, 102, 241, 0.28)'; // Indigo ring
+            ctx.lineWidth = 1.2;
+            ctx.setLineDash([4, 4]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Label contour with potential V = -GM / r
+            if (showContours) {
+              const rM = rKm * 1000;
+              const V_MJ = ((-G * mod1.mass) / rM) / 1e6; // MJ/kg
+              ctx.font = '10px "JetBrains Mono", monospace';
+              ctx.fillStyle = '#818CF8';
+              ctx.fillText(`${V_MJ.toFixed(1)} MJ/kg`, cx + rPx + 4, cy - 4);
+            }
+          }
+        });
+
+        // Draw Central Planet Body
+        const planetRPx = Math.max(mod1.planetRadiusKm * scale, 16);
+        // Atmosphere glow
+        const glowGrad = ctx.createRadialGradient(cx, cy, planetRPx * 0.8, cx, cy, planetRPx * 1.5);
+        glowGrad.addColorStop(0, 'rgba(56, 189, 248, 0.4)');
+        glowGrad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+        ctx.fillStyle = glowGrad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, planetRPx * 1.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Planet surface gradient
+        const planetGrad = ctx.createRadialGradient(cx - planetRPx * 0.3, cy - planetRPx * 0.3, planetRPx * 0.1, cx, cy, planetRPx);
+        planetGrad.addColorStop(0, '#38BDF8');
+        planetGrad.addColorStop(0.7, '#0284C7');
+        planetGrad.addColorStop(1, '#0369A1');
+        ctx.fillStyle = planetGrad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, planetRPx, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#BAE6FD';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Planet mass label
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 11px "Plus Jakarta Sans", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('M', cx, cy + 4);
+
+        // Draw Particle Drop Trail if active
+        if (mod1.dropTrail.length > 1) {
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(244, 63, 94, 0.7)';
+          ctx.lineWidth = 2;
+          for (let i = 0; i < mod1.dropTrail.length; i++) {
+            const tx = cx + mod1.dropTrail[i].x * scale;
+            const ty = cy + mod1.dropTrail[i].y * scale;
+            if (i === 0) ctx.moveTo(tx, ty);
+            else ctx.lineTo(tx, ty);
+          }
+          ctx.stroke();
+        }
+
+        // Current Probe Coordinates & Physics
+        const px = cx + mod1.probe.x * scale;
+        const py = cy + mod1.probe.y * scale;
+        const rKm = Math.hypot(mod1.probe.x, mod1.probe.y);
+        const rM = rKm * 1000;
+
+        // Current Equipotential Ring through probe
+        ctx.beginPath();
+        ctx.arc(cx, cy, rKm * scale, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.45)'; // Amber contour through probe
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Radial line from center to probe (dashed guide)
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(px, py);
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Unit vectors in radial & tangential directions
+        const uRx = mod1.probe.x / rKm; // pointing outward (+r)
+        const uRy = mod1.probe.y / rKm;
+        const uTx = -uRy; // tangent direction (+θ)
+        const uTy = uRx;
+
+        // Physics values
+        const V = (-G * mod1.mass) / rM; // J/kg
+        const E = (G * mod1.mass) / (rM * rM); // N/kg or m/s²
+        const slope = E; // dV/dr = GM/r²
+
+        // Update live telemetry texts
+        updateTelemetry(rKm, rM, V, E, slope);
+
+        // 1. Equipotential Tangent (Amber dashed line: dV = 0)
+        const showTangent = document.getElementById('chk-tangent').checked;
+        const tangentLen = 70;
+        if (showTangent) {
+          ctx.beginPath();
+          ctx.moveTo(px - uTx * tangentLen, py - uTy * tangentLen);
+          ctx.lineTo(px + uTx * tangentLen, py + uTy * tangentLen);
+          ctx.strokeStyle = '#F59E0B'; // Amber
+          ctx.lineWidth = 2;
+          ctx.setLineDash([5, 4]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Tangent text tag
+          ctx.font = 'bold 10px "JetBrains Mono", monospace';
+          ctx.fillStyle = '#FBBF24';
+          ctx.textAlign = 'left';
+          ctx.fillText('dV = 0 (Tangent)', px + uTx * tangentLen + 5, py + uTy * tangentLen);
+        }
+
+        // 2. Orthogonality 90° Indicator Square
+        const showOrtho = document.getElementById('chk-ortho').checked;
+        if (showOrtho) {
+          const sq = 12;
+          // Vector inward is (-uRx, -uRy), tangent is (uTx, uTy)
+          const p1x = px - uRx * sq;
+          const p1y = py - uRy * sq;
+          const p2x = p1x + uTx * sq;
+          const p2y = p1y + uTy * sq;
+          const p3x = px + uTx * sq;
+          const p3y = py + uTy * sq;
+
+          ctx.beginPath();
+          ctx.moveTo(p1x, p1y);
+          ctx.lineTo(p2x, p2y);
+          ctx.lineTo(p3x, p3y);
+          ctx.strokeStyle = '#F1F5F9';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        }
+
+        // Vector arrow drawing helper
+        function drawArrow(x0, y0, x1, y1, color, label, labelOffset = 14) {
+          const headlen = 10;
+          const dx = x1 - x0;
+          const dy = y1 - y0;
+          const angle = Math.atan2(dy, dx);
+          ctx.beginPath();
+          ctx.moveTo(x0, y0);
+          ctx.lineTo(x1, y1);
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2.8;
+          ctx.stroke();
+
+          // Arrowhead
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x1 - headlen * Math.cos(angle - Math.PI / 6), y1 - headlen * Math.sin(angle - Math.PI / 6));
+          ctx.lineTo(x1 - headlen * Math.cos(angle + Math.PI / 6), y1 - headlen * Math.sin(angle + Math.PI / 6));
+          ctx.closePath();
+          ctx.fillStyle = color;
+          ctx.fill();
+
+          // Label
+          if (label) {
+            ctx.font = 'bold 11px "Plus Jakarta Sans", sans-serif';
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x1 + Math.cos(angle) * labelOffset, y1 + Math.sin(angle) * labelOffset);
+          }
+        }
+
+        // Vector length fixed/scaled for visual clarity
+        const vecLen = 65;
+
+        // 3. Gradient Vector ∇V (Emerald Green, pointing outward +r toward higher potential)
+        const showGradient = document.getElementById('chk-gradient').checked;
+        if (showGradient) {
+          drawArrow(px, py, px + uRx * vecLen, py + uRy * vecLen, '#10B981', '∇V (Gradient)');
+        }
+
+        // 4. Field Intensity Vector E = -∇V (Crimson Red, pointing inward -r toward center)
+        const showField = document.getElementById('chk-field').checked;
+        if (showField) {
+          drawArrow(px, py, px - uRx * vecLen, py - uRy * vecLen, '#F43F5E', 'E = -∇V (Field)');
+        }
+
+        // Draw Probe Body
+        ctx.beginPath();
+        ctx.arc(px, py, 7, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
+        ctx.strokeStyle = mod1.isDragging ? '#38BDF8' : '#0F172A';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        // Subtle drag ring
+        ctx.beginPath();
+        ctx.arc(px, py, 14, 0, Math.PI * 2);
+        ctx.strokeStyle = mod1.isDragging ? 'rgba(56, 189, 248, 0.8)' : 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      }
+
+      // Update Telemetry Displays
+      function updateTelemetry(rKm, rM, V, E, slope) {
+        const rKmStr = rKm.toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' km';
+        const rMStr = (rM / 1e6).toFixed(2) + ' × 10⁶ m';
+        document.getElementById('tele-r').textContent = rKmStr;
+        document.getElementById('tele-r-m').textContent = rMStr;
+
+        const vMJ = (V / 1e6).toFixed(2);
+        const vJ = (V / 1e6).toFixed(2);
+        document.getElementById('tele-v').textContent = `${vMJ} MJ/kg`;
+        document.getElementById('tele-v-j').textContent = `${vJ} × 10⁶ J/kg`;
+
+        document.getElementById('tele-e').textContent = `${E.toFixed(3)} N/kg`;
+        document.getElementById('tele-grad').textContent = `+${slope.toFixed(3)} N/kg`;
+
+        document.getElementById('txt-slope-val').textContent = (slope / 1e3).toFixed(4);
+        document.getElementById('txt-e-val').textContent = `-${E.toFixed(3)}`;
+        document.getElementById('label-tangent-slope').textContent = `Slope = +${(slope/1e3).toFixed(4)} MJ/(kg·km)`;
+      }
+
+      // Draw Module 1 1D Graph V(r) & Tangent Slope
+      function drawMod1Graph() {
+        const w = mod1GraphCanvas.clientWidth;
+        const h = mod1GraphCanvas.clientHeight;
+        const ctx = mod1GraphCtx;
+        ctx.clearRect(0, 0, w, h);
+
+        const padLeft = 52;
+        const padRight = 20;
+        const padTop = 20;
+        const padBottom = 34;
+
+        const graphW = w - padLeft - padRight;
+        const graphH = h - padTop - padBottom;
+
+        // Coordinate bounds
+        const minR = mod1.planetRadiusKm;
+        const maxR = 35000; // km
+        // V(minR) is lowest (most negative), V(maxR) approaches 0
+        const minV = (-G * mod1.mass) / (minR * 1000) / 1e6; // MJ/kg
+        const maxV = 0; // MJ/kg
+
+        const mapX = (r) => padLeft + ((r - minR) / (maxR - minR)) * graphW;
+        const mapY = (v) => padBottom + padTop + ((maxV - v) / (maxV - minV)) * graphH;
+
+        // Grid lines
+        ctx.strokeStyle = '#E2E8F0';
+        ctx.lineWidth = 1;
+        // Horizontal grid
+        const vTicks = 4;
+        for (let i = 0; i <= vTicks; i++) {
+          const vVal = minV + (i / vTicks) * (maxV - minV);
+          const y = mapY(vVal);
+          ctx.beginPath(); ctx.moveTo(padLeft, y); ctx.lineTo(w - padRight, y); ctx.stroke();
+          ctx.fillStyle = '#64748B';
+          ctx.font = '10px "JetBrains Mono", monospace';
+          ctx.textAlign = 'right';
+          ctx.fillText(`${vVal.toFixed(0)}`, padLeft - 6, y + 3);
+        }
+
+        // Vertical grid
+        const rTicks = 4;
+        for (let i = 0; i <= rTicks; i++) {
+          const rVal = minR + (i / rTicks) * (maxR - minR);
+          const x = mapX(rVal);
+          ctx.beginPath(); ctx.moveTo(x, padTop); ctx.lineTo(x, h - padBottom); ctx.stroke();
+          ctx.fillStyle = '#64748B';
+          ctx.font = '10px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`${(rVal / 1000).toFixed(0)}k`, x, h - padBottom + 14);
+        }
+
+        // Axes labels
+        ctx.fillStyle = '#0F172A';
+        ctx.font = 'bold 10px "Plus Jakarta Sans", sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText('r (km) →', w - padRight, h - padBottom + 28);
+        ctx.textAlign = 'left';
+        ctx.fillText('V (MJ/kg) ↑', padLeft - 44, padTop - 6);
+
+        // Draw V(r) Curve: V = -GM / r
+        ctx.beginPath();
+        ctx.strokeStyle = '#0284C7'; // Brand Blue curve
+        ctx.lineWidth = 2.4;
+        const steps = 80;
+        for (let i = 0; i <= steps; i++) {
+          const r = minR + (i / steps) * (maxR - minR);
+          const V_MJ = ((-G * mod1.mass) / (r * 1000)) / 1e6;
+          const x = mapX(r);
+          const y = mapY(V_MJ);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Current Probe on Curve
+        const currentR = Math.hypot(mod1.probe.x, mod1.probe.y);
+        const clampedR = Math.max(minR, Math.min(maxR, currentR));
+        const currentV_MJ = ((-G * mod1.mass) / (clampedR * 1000)) / 1e6;
+
+        const probeX = mapX(clampedR);
+        const probeY = mapY(currentV_MJ);
+
+        // Draw Live Tangent Line at (probeX, probeY)
+        // Tangent slope in MJ/(kg·km)
+        const dV_dr_m = (G * mod1.mass) / ((clampedR * 1000) ** 2); // J/(kg·m)
+        const dV_dr_km = dV_dr_m * 1000 / 1e6; // MJ/(kg·km)
+
+        // Visual slope on canvas in pixels: dy_px / dx_px
+        // Notice y decreases as V increases!
+        const dx_km = 4000;
+        const xA = Math.max(minR, clampedR - dx_km);
+        const xB = Math.min(maxR, clampedR + dx_km);
+        const vA = currentV_MJ + dV_dr_km * (xA - clampedR);
+        const vB = currentV_MJ + dV_dr_km * (xB - clampedR);
+
+        ctx.beginPath();
+        ctx.moveTo(mapX(xA), mapY(vA));
+        ctx.lineTo(mapX(xB), mapY(vB));
+        ctx.strokeStyle = '#10B981'; // Emerald Green Tangent
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Differential Triangle (Δr, ΔV)
+        const dtX = mapX(xB);
+        const dtY = mapY(vA);
+        ctx.beginPath();
+        ctx.moveTo(mapX(xA), mapY(vA));
+        ctx.lineTo(dtX, dtY);
+        ctx.lineTo(dtX, mapY(vB));
+        ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([2, 2]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Label Slope = dV/dr
+        ctx.fillStyle = '#059669';
+        ctx.font = 'bold 10px "JetBrains Mono", monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(`+ΔV/Δr`, dtX + 4, (dtY + mapY(vB)) / 2 + 3);
+
+        // Probe marker dot
+        ctx.beginPath();
+        ctx.arc(probeX, probeY, 5.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#DC2626'; // Crimson red dot
+        ctx.fill();
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      // =========================================================================
+      // MODULE 2: HOLLOW SHELL, SOLID SPHERE & CONCENTRIC SHELLS
+      // =========================================================================
+      const mod2 = {
+        mode: 'solid', // 'solid', 'hollow', 'concentric'
+        radius: 6400, // km (R)
+        mass: 6.0e24, // kg (M)
+        // Concentric shell parameters
+        r1: 3000, // km
+        m1: 2.0e24, // kg
+        r2: 7000, // km
+        m2: 4.0e24, // kg
+        // Probe distance from center in km
+        r: 3200, 
+        isDragging: false,
+        maxViewR: 14000, // km
+      };
+
+      const mod2Canvas = document.getElementById('mod2-canvas');
+      const mod2Ctx = mod2Canvas.getContext('2d');
+      const mod2GraphECanvas = document.getElementById('mod2-graph-e');
+      const mod2GraphECtx = mod2GraphECanvas.getContext('2d');
+      const mod2GraphVCanvas = document.getElementById('mod2-graph-v');
+      const mod2GraphVCtx = mod2GraphVCanvas.getContext('2d');
+
+      function resizeMod2Canvases() {
+        const dpr = window.devicePixelRatio || 1;
+        // Section canvas
+        const r1 = mod2Canvas.parentElement.getBoundingClientRect();
+        mod2Canvas.width = r1.width * dpr;
+        mod2Canvas.height = r1.height * dpr;
+        mod2Ctx.scale(dpr, dpr);
+
+        // Graph E
+        const rE = mod2GraphECanvas.parentElement.getBoundingClientRect();
+        mod2GraphECanvas.width = rE.width * dpr;
+        mod2GraphECanvas.height = rE.height * dpr;
+        mod2GraphECtx.scale(dpr, dpr);
+
+        // Graph V
+        const rV = mod2GraphVCanvas.parentElement.getBoundingClientRect();
+        mod2GraphVCanvas.width = rV.width * dpr;
+        mod2GraphVCanvas.height = rV.height * dpr;
+        mod2GraphVCtx.scale(dpr, dpr);
+      }
+
+      function setMod2Mode(mode) {
+        mod2.mode = mode;
+        const bA = document.getElementById('mod2-mode-a');
+        const bB = document.getElementById('mod2-mode-b');
+        const bC = document.getElementById('mod2-mode-c');
+
+        const active = "px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap bg-white text-slate-900 shadow-sm";
+        const inactive = "px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap text-slate-600 hover:text-slate-900";
+
+        bA.className = mode === 'solid' ? active : inactive;
+        bB.className = mode === 'hollow' ? active : inactive;
+        bC.className = mode === 'concentric' ? active : inactive;
+
+        document.getElementById('controls-single').classList.toggle('hidden', mode === 'concentric');
+        document.getElementById('controls-concentric').classList.toggle('hidden', mode !== 'concentric');
+
+        updateMod2FormulaDisplay();
+        drawMod2();
+        drawMod2Graphs();
+        playTone(480, 'sine', 0.08, 0.05);
+      }
+
+      function onMod2RadiusChange(val) {
+        mod2.radius = parseFloat(val);
+        document.getElementById('label-m2-r').textContent = `${mod2.radius.toLocaleString()} km`;
+        drawMod2();
+        drawMod2Graphs();
+      }
+
+      function onMod2MassChange(val) {
+        mod2.mass = Math.pow(10, parseFloat(val));
+        const exp = Math.floor(Math.log10(mod2.mass));
+        const mantissa = (mod2.mass / Math.pow(10, exp)).toFixed(1);
+        document.getElementById('label-m2-m').textContent = `${mantissa} × 10²${exp - 20} kg`;
+        drawMod2();
+        drawMod2Graphs();
+      }
+
+      function onMod2ConcentricChange() {
+        const r1 = parseFloat(document.getElementById('slider-m2-r1').value);
+        let r2 = parseFloat(document.getElementById('slider-m2-r2').value);
+        if (r2 <= r1 + 800) {
+          r2 = r1 + 800;
+          document.getElementById('slider-m2-r2').value = r2;
+        }
+        mod2.r1 = r1;
+        mod2.r2 = r2;
+        document.getElementById('label-m2-r1').textContent = `${r1.toLocaleString()} km | 2.0 × 10²⁴ kg`;
+        document.getElementById('label-m2-r2').textContent = `${r2.toLocaleString()} km | 4.0 × 10²⁴ kg`;
+        drawMod2();
+        drawMod2Graphs();
+      }
+
+      function updateMod2FormulaDisplay() {
+        const container = document.getElementById('mod2-formula-content');
+        const tipTitle = document.getElementById('tip-title');
+        const tipBody = document.getElementById('tip-body');
+        const descE = document.getElementById('desc-graph-e-left');
+        const descV = document.getElementById('desc-graph-v-left');
+
+        const isEn = currentLang === 'en';
+
+        if (mod2.mode === 'solid') {
+          container.innerHTML = `
+            <div class="mb-1"><span class="text-sky-700 font-bold">${isEn ? 'Inside' : 'অভ্যন্তরে'} (r ≤ R):</span> E = (GM/R³)·r | V = -(GM/2R³)(3R² - r²)</div>
+            <div class="mb-1"><span class="text-rose-700 font-bold">${isEn ? 'Center' : 'কেন্দ্রে'} (r = 0):</span> E = 0 | V = -1.5 (GM/R) = 1.5 V_surface</div>
+            <div><span class="text-emerald-700 font-bold">${isEn ? 'Outside' : 'বাইরে'} (r &gt; R):</span> E = GM/r² | V = -GM/r</div>
+          `;
+          if (isEn) {
+            tipTitle.textContent = "Core Physical Insight (Uniform Solid Sphere):";
+            tipBody.innerHTML = "Inside a solid sphere, field intensity increases linearly (<span class='font-mono font-semibold'>E ∝ r</span>) and vanishes at the center (<span class='font-mono font-semibold'>E = 0</span>). The gravitational potential reaches its deepest minimum at the center: <span class='font-mono font-semibold'>V(0) = -1.5 GM/R</span>, exactly 1.5 times the surface potential.";
+            descE.textContent = "Inside: E ∝ r (Linear)";
+            descV.textContent = "Inside: Parabolic V ∝ (3R² - r²)";
+          } else {
+            tipTitle.textContent = "HSC বিশেষ পর্যবেক্ষণ (নিরেট গোলক):";
+            tipBody.innerHTML = "নিরেট গোলকের অভ্যন্তরে <span class='font-mono font-semibold'>E ∝ r</span> (সরলরেখা) এবং কেন্দ্রে বিভব সর্বনিম্ন: <span class='font-mono font-semibold'>V(0) = -1.5 GM/R</span> যা পৃষ্ঠের বিভবের দেড়গুণ (150%)।";
+            descE.textContent = "অভ্যন্তরে: E ∝ r (সরলরেখা)";
+            descV.textContent = "অভ্যন্তরে: প্যারাবলিক V ∝ (3R² - r²)";
+          }
+        } else if (mod2.mode === 'hollow') {
+          container.innerHTML = `
+            <div class="mb-1"><span class="text-sky-700 font-bold">${isEn ? 'Inside Cavity' : 'গহ্বরে'} (r &lt; R):</span> E = 0 (${isEn ? 'Shielding' : 'শিল্ডিং'}) | V = -GM/R (${isEn ? 'Constant' : 'ধ্রুবক'})</div>
+            <div class="mb-1"><span class="text-rose-700 font-bold">${isEn ? 'Surface Step' : 'পৃষ্ঠে'} (r = R):</span> E jumps to GM/R² | V = -GM/R</div>
+            <div><span class="text-emerald-700 font-bold">${isEn ? 'Outside' : 'বাইরে'} (r &ge; R):</span> E = GM/r² | V = -GM/r</div>
+          `;
+          if (isEn) {
+            tipTitle.textContent = "Core Physical Insight (Thin Hollow Spherical Shell):";
+            tipBody.innerHTML = "Inside a hollow shell, field intensity is zero (<span class='font-mono font-semibold'>E = 0</span>) everywhere due to spherical Gauss symmetry. Since <span class='font-mono font-semibold'>dV/dr = 0</span>, potential remains constant throughout the cavity and equals the surface value (<span class='font-mono font-semibold'>V = -GM/R</span>).";
+            descE.textContent = "Inside: E = 0 (Step Discontinuity at R)";
+            descV.textContent = "Inside: Flat Constant V = -GM/R";
+          } else {
+            tipTitle.textContent = "HSC বিশেষ পর্যবেক্ষণ (ফাঁপা গোলক):";
+            tipBody.innerHTML = "ফাঁপা গোলকের ভেতরে সর্বত্র প্রাবল্য <span class='font-mono font-semibold'>E = 0</span>, ফলে <span class='font-mono font-semibold'>dV/dr = 0</span> হওয়ায় বিভব সম্পূর্ণ ধ্রুবক থাকে এবং পৃষ্ঠের সমান হয় (<span class='font-mono font-semibold'>V = -GM/R</span>)।";
+            descE.textContent = "অভ্যন্তরে: E = 0 (পৃষ্ঠে লাফ)";
+            descV.textContent = "অভ্যন্তরে: ধ্রুবক বিভব V = -GM/R";
+          }
+        } else {
+          container.innerHTML = `
+            <div class="mb-1"><span class="text-sky-700 font-bold">${isEn ? 'Zone 1' : 'অঞ্চল ১'} (r &lt; R₁):</span> E = 0 | V = -GM₁/R₁ - GM₂/R₂</div>
+            <div class="mb-1"><span class="text-amber-700 font-bold">${isEn ? 'Zone 2' : 'অঞ্চল ২'} (R₁ ≤ r &lt; R₂):</span> E = GM₁/r² | V = -GM₁/r - GM₂/R₂</div>
+            <div><span class="text-emerald-700 font-bold">${isEn ? 'Zone 3' : 'অঞ্চল ৩'} (r &ge; R₂):</span> E = G(M₁+M₂)/r² | V = -G(M₁+M₂)/r</div>
+          `;
+          if (isEn) {
+            tipTitle.textContent = "Core Physical Insight (Nested Concentric Shells):";
+            tipBody.innerHTML = "By the Principle of Superposition, between the two shells (<span class='font-mono font-semibold'>R₁ ≤ r &lt; R₂</span>), only the inner shell generates a gravitational field (<span class='font-mono font-semibold'>E = GM₁/r²</span>); the outer shell contributes zero field inside its cavity.";
+            descE.textContent = "Zone 1: E=0 | Zone 2: E₁ | Zone 3: E₁+E₂";
+            descV.textContent = "Continuous piecewise V with slope changes";
+          } else {
+            tipTitle.textContent = "HSC বিশেষ পর্যবেক্ষণ (সমকেন্দ্রিক ফাঁপা গোলকদ্বয়):";
+            tipBody.innerHTML = "উপরিপাতন নীতি অনুসারে দুই গোলকের মধ্যবর্তী স্থানে (<span class='font-mono font-semibold'>R₁ ≤ r &lt; R₂</span>) শুধুমাত্র ভেতরের গোলকটি প্রাবল্য তৈরি করে, বাইরের গোলকের ভেতরের ক্ষেত্র শূন্য!";
+            descE.textContent = "অঞ্চল ১: E=0 | অঞ্চল ২: E₁ | অঞ্চল ৩: E₁+E₂";
+            descV.textContent = "ধারাবাহিক বিভব রেখা (ঢালের পরিবর্তন)";
+          }
+        }
+      }
+
+      // Physics calculation for Module 2
+      function getMod2Physics(rKm) {
+        const rM = Math.max(rKm * 1000, 100);
+        const isEn = currentLang === 'en';
+
+        if (mod2.mode === 'solid') {
+          const RM = mod2.radius * 1000;
+          const M = mod2.mass;
+          if (rKm <= mod2.radius) {
+            const E = (G * M / Math.pow(RM, 3)) * rM;
+            const V = -(G * M / (2 * Math.pow(RM, 3))) * (3 * RM * RM - rM * rM);
+            return { E, V, zone: isEn ? 'Inside Solid Sphere (r ≤ R)' : 'নিরেট গোলকের অভ্যন্তরে (r ≤ R)' };
+          } else {
+            const E = (G * M) / (rM * rM);
+            const V = -(G * M) / rM;
+            return { E, V, zone: isEn ? 'Outside Solid Sphere (r > R)' : 'নিরেট গোলকের বাইরে (r > R)' };
+          }
+        } else if (mod2.mode === 'hollow') {
+          const RM = mod2.radius * 1000;
+          const M = mod2.mass;
+          if (rKm < mod2.radius) {
+            const E = 0;
+            const V = -(G * M) / RM;
+            return { E, V, zone: isEn ? 'Inside Hollow Cavity (r < R, E = 0)' : 'ফাঁপা গোলকের গহ্বরে (r < R, E = 0)' };
+          } else {
+            const E = (G * M) / (rM * rM);
+            const V = -(G * M) / rM;
+            return { E, V, zone: isEn ? 'Outside Hollow Shell (r ≥ R)' : 'ফাঁপা গোলকের বাইরে (r ≥ R)' };
+          }
+        } else {
+          // Concentric shells
+          const R1M = mod2.r1 * 1000;
+          const R2M = mod2.r2 * 1000;
+          const M1 = mod2.m1;
+          const M2 = mod2.m2;
+
+          if (rKm < mod2.r1) {
+            const E = 0;
+            const V = -(G * M1) / R1M - (G * M2) / R2M;
+            return { E, V, zone: isEn ? 'Zone 1: Inside Inner Cavity (r < R₁)' : 'অঞ্চল ১: ভেতরের গহ্বর (r < R₁)' };
+          } else if (rKm < mod2.r2) {
+            const E = (G * M1) / (rM * rM);
+            const V = -(G * M1) / rM - (G * M2) / R2M;
+            return { E, V, zone: isEn ? 'Zone 2: Between Shells (R₁ ≤ r < R₂)' : 'অঞ্চল ২: গোলকদ্বয়ের মধ্যবর্তী স্থান (R₁ ≤ r < R₂)' };
+          } else {
+            const E = (G * (M1 + M2)) / (rM * rM);
+            const V = -(G * (M1 + M2)) / rM;
+            return { E, V, zone: isEn ? 'Zone 3: Outside Both Shells (r ≥ R₂)' : 'অঞ্চল ৩: উভয় গোলকের বাইরে (r ≥ R₂)' };
+          }
+        }
+      }
+
+      // Dragging events for Module 2
+      function setupMod2Events() {
+        const getCanvasCoord = (e) => {
+          const rect = mod2Canvas.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          return {
+            x: clientX - rect.left,
+            y: clientY - rect.top
+          };
+        };
+
+        const handleStart = (e) => {
+          const pt = getCanvasCoord(e);
+          const w = mod2Canvas.clientWidth;
+          const h = mod2Canvas.clientHeight;
+          const cx = w * 0.42;
+          const cy = h / 2;
+          const scale = (w * 0.48) / mod2.maxViewR;
+
+          // Probe coordinates
+          const probeScreenX = cx + mod2.r * scale;
+          const dist = Math.hypot(pt.x - probeScreenX, pt.y - cy);
+          if (dist < 40) {
+            mod2.isDragging = true;
+          }
+        };
+
+        const handleMove = (e) => {
+          if (!mod2.isDragging) return;
+          const pt = getCanvasCoord(e);
+          const w = mod2Canvas.clientWidth;
+          const cx = w * 0.42;
+          const scale = (w * 0.48) / mod2.maxViewR;
+
+          let newR = (pt.x - cx) / scale;
+          newR = Math.max(0, Math.min(mod2.maxViewR * 0.96, newR));
+          mod2.r = newR;
+          drawMod2();
+          drawMod2Graphs();
+        };
+
+        const handleEnd = () => {
+          if (mod2.isDragging) {
+            mod2.isDragging = false;
+            playTone(420, 'sine', 0.05, 0.03);
+          }
+        };
+
+        mod2Canvas.addEventListener('mousedown', handleStart);
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('mouseup', handleEnd);
+
+        mod2Canvas.addEventListener('touchstart', (e) => { e.preventDefault(); handleStart(e); }, { passive: false });
+        window.addEventListener('touchmove', handleMove, { passive: true });
+        window.addEventListener('touchend', handleEnd);
+      }
+
+      // Draw Module 2 Cross-Section
+      function drawMod2() {
+        const w = mod2Canvas.clientWidth;
+        const h = mod2Canvas.clientHeight;
+        const ctx = mod2Ctx;
+        ctx.clearRect(0, 0, w, h);
+
+        const cx = w * 0.42;
+        const cy = h / 2;
+        const scale = (w * 0.48) / mod2.maxViewR;
+
+        // Background space grid
+        ctx.strokeStyle = '#1E293B';
+        ctx.lineWidth = 0.5;
+        for (let x = 0; x < w; x += 40) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+        }
+        for (let y = 0; y < h; y += 40) {
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+        }
+
+        // Horizontal radial guide axis
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(w - 20, cy);
+        ctx.strokeStyle = '#94A3B8';
+        ctx.lineWidth = 1.2;
+        ctx.setLineDash([4, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Mode specific rendering
+        if (mod2.mode === 'solid') {
+          const RPx = mod2.radius * scale;
+          // Dense shaded solid sphere cross-section
+          const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, RPx);
+          grad.addColorStop(0, '#0369A1');
+          grad.addColorStop(0.7, '#0284C7');
+          grad.addColorStop(1, '#38BDF8');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(cx, cy, RPx, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Subtle crosshatch pattern for solid matter
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(cx, cy, RPx, 0, Math.PI * 2);
+          ctx.clip();
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+          ctx.lineWidth = 1;
+          for (let d = -RPx; d <= RPx; d += 16) {
+            ctx.beginPath();
+            ctx.moveTo(cx + d - RPx, cy - RPx);
+            ctx.lineTo(cx + d + RPx, cy + RPx);
+            ctx.stroke();
+          }
+          ctx.restore();
+
+          // Surface boundary ring
+          ctx.strokeStyle = '#E0F2FE';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.arc(cx, cy, RPx, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Label R
+          ctx.fillStyle = '#BAE6FD';
+          ctx.font = 'bold 11px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`r = R (${mod2.radius} km)`, cx + RPx, cy - 8);
+
+        } else if (mod2.mode === 'hollow') {
+          const RPx = mod2.radius * scale;
+          const shellThick = 12;
+
+          // Inner hollow cavity (clean dark interior)
+          ctx.fillStyle = '#0F172A';
+          ctx.beginPath();
+          ctx.arc(cx, cy, RPx - shellThick, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Hollow shell material
+          ctx.strokeStyle = '#38BDF8';
+          ctx.lineWidth = shellThick;
+          ctx.beginPath();
+          ctx.arc(cx, cy, RPx - shellThick / 2, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Outer surface highlight
+          ctx.strokeStyle = '#BAE6FD';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(cx, cy, RPx, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Label inside cavity: E = 0
+          ctx.fillStyle = '#94A3B8';
+          ctx.font = 'bold 11px "Plus Jakarta Sans", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('Inside Cavity: E = 0', cx, cy - 14);
+          ctx.fillStyle = '#38BDF8';
+          ctx.font = '10px "JetBrains Mono", monospace';
+          ctx.fillText('V = -GM/R = const', cx, cy + 8);
+
+        } else {
+          // Concentric Shells
+          const R1Px = mod2.r1 * scale;
+          const R2Px = mod2.r2 * scale;
+          const shellThick = 8;
+
+          // Inner Shell 1
+          ctx.strokeStyle = '#38BDF8';
+          ctx.lineWidth = shellThick;
+          ctx.beginPath();
+          ctx.arc(cx, cy, R1Px, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Outer Shell 2
+          ctx.strokeStyle = '#F59E0B';
+          ctx.lineWidth = shellThick;
+          ctx.beginPath();
+          ctx.arc(cx, cy, R2Px, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Boundaries labels
+          ctx.font = '10px "JetBrains Mono", monospace';
+          ctx.fillStyle = '#38BDF8';
+          ctx.textAlign = 'center';
+          ctx.fillText(`R₁ = ${mod2.r1} km`, cx + R1Px, cy - 10);
+          ctx.fillStyle = '#F59E0B';
+          ctx.fillText(`R₂ = ${mod2.r2} km`, cx + R2Px, cy - 10);
+        }
+
+        // Center geometric origin dot
+        ctx.beginPath();
+        ctx.arc(cx, cy, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
+
+        // Current Probe location
+        const probePx = cx + mod2.r * scale;
+
+        // Radial measure ruler line from center to probe
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + 24);
+        ctx.lineTo(probePx, cy + 24);
+        ctx.strokeStyle = '#38BDF8';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        // Ruler ticks
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + 18); ctx.lineTo(cx, cy + 30);
+        ctx.moveTo(probePx, cy + 18); ctx.lineTo(probePx, cy + 30);
+        ctx.stroke();
+
+        // Draggable Test Probe Dot
+        ctx.beginPath();
+        ctx.arc(probePx, cy, 8, 0, Math.PI * 2);
+        ctx.fillStyle = '#DC2626'; // Red probe
+        ctx.fill();
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        // Active halo
+        ctx.beginPath();
+        ctx.arc(probePx, cy, 16, 0, Math.PI * 2);
+        ctx.strokeStyle = mod2.isDragging ? 'rgba(244, 63, 94, 0.8)' : 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        // Text indicator update
+        const phys = getMod2Physics(mod2.r);
+        document.getElementById('mod2-r-text').textContent = `r = ${Math.round(mod2.r).toLocaleString()} km`;
+        if (mod2.mode === 'concentric') {
+          document.getElementById('mod2-r-ratio').textContent = `${(mod2.r / mod2.r1).toFixed(2)} R₁`;
+        } else {
+          document.getElementById('mod2-r-ratio').textContent = `${(mod2.r / mod2.radius).toFixed(2)} R`;
+        }
+        document.getElementById('mod2-zone-tag').textContent = phys.zone;
+      }
+
+      // Draw Module 2 Graphs (E vs r and V vs r)
+      function drawMod2Graphs() {
+        const wE = mod2GraphECanvas.clientWidth;
+        const hE = mod2GraphECanvas.clientHeight;
+        const ctxE = mod2GraphECtx;
+        ctxE.clearRect(0, 0, wE, hE);
+
+        const wV = mod2GraphVCanvas.clientWidth;
+        const hV = mod2GraphVCanvas.clientHeight;
+        const ctxV = mod2GraphVCtx;
+        ctxV.clearRect(0, 0, wV, hV);
+
+        const padLeft = 60;
+        const padRight = 20;
+        const padTop = 18;
+        const padBottom = 32;
+
+        const gW = wE - padLeft - padRight;
+        const gH = hE - padTop - padBottom;
+
+        const maxR = mod2.maxViewR;
+        const mapX = (rKm) => padLeft + (rKm / maxR) * gW;
+
+        // 1. EVALUATE RANGE OF E & V
+        let maxE = 0;
+        let minV = 0;
+        const steps = 140;
+        const rVals = [];
+        const eVals = [];
+        const vVals = [];
+
+        for (let i = 0; i <= steps; i++) {
+          const rKm = (i / steps) * maxR;
+          const p = getMod2Physics(rKm);
+          rVals.push(rKm);
+          eVals.push(p.E);
+          vVals.push(p.V / 1e6); // MJ/kg
+          if (p.E > maxE) maxE = p.E;
+          if (p.V / 1e6 < minV) minV = p.V / 1e6;
+        }
+
+        maxE = Math.max(maxE * 1.15, 1);
+        minV = Math.min(minV * 1.15, -1);
+        const maxV = 0;
+
+        const mapYE = (e) => padTop + gH - (e / maxE) * gH;
+        const mapYV = (v) => padTop + ((maxV - v) / (maxV - minV)) * gH;
+
+        // ================= DRAW GRAPH E vs r =================
+        // Grid
+        ctxE.strokeStyle = '#E2E8F0';
+        ctxE.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+          const eVal = (i / 4) * maxE;
+          const y = mapYE(eVal);
+          ctxE.beginPath(); ctxE.moveTo(padLeft, y); ctxE.lineTo(wE - padRight, y); ctxE.stroke();
+          ctxE.fillStyle = '#64748B';
+          ctxE.font = '10px "JetBrains Mono", monospace';
+          ctxE.textAlign = 'right';
+          ctxE.fillText(eVal.toFixed(1), padLeft - 6, y + 3);
+        }
+        for (let i = 0; i <= 4; i++) {
+          const rKm = (i / 4) * maxR;
+          const x = mapX(rKm);
+          ctxE.beginPath(); ctxE.moveTo(x, padTop); ctxE.lineTo(x, hE - padBottom); ctxE.stroke();
+          ctxE.fillStyle = '#64748B';
+          ctxE.font = '10px "JetBrains Mono", monospace';
+          ctxE.textAlign = 'center';
+          ctxE.fillText(`${(rKm / 1000).toFixed(0)}k`, x, hE - padBottom + 14);
+        }
+
+        // Boundary vertical lines
+        if (mod2.mode !== 'concentric') {
+          const bX = mapX(mod2.radius);
+          ctxE.beginPath();
+          ctxE.moveTo(bX, padTop); ctxE.lineTo(bX, hE - padBottom);
+          ctxE.strokeStyle = '#DC2626';
+          ctxE.lineWidth = 1.2;
+          ctxE.setLineDash([3, 3]);
+          ctxE.stroke();
+          ctxE.setLineDash([]);
+          ctxE.fillStyle = '#DC2626';
+          ctxE.font = 'bold 10px "JetBrains Mono", monospace';
+          ctxE.textAlign = 'center';
+          ctxE.fillText('r = R', bX, padTop + 10);
+        } else {
+          const b1 = mapX(mod2.r1);
+          const b2 = mapX(mod2.r2);
+          ctxE.strokeStyle = '#0284C7';
+          ctxE.lineWidth = 1.2; ctxE.setLineDash([3, 3]);
+          ctxE.beginPath(); ctxE.moveTo(b1, padTop); ctxE.lineTo(b1, hE - padBottom); ctxE.stroke();
+          ctxE.strokeStyle = '#D97706';
+          ctxE.beginPath(); ctxE.moveTo(b2, padTop); ctxE.lineTo(b2, hE - padBottom); ctxE.stroke();
+          ctxE.setLineDash([]);
+          ctxE.fillStyle = '#0284C7';
+          ctxE.font = 'bold 9px "JetBrains Mono", monospace';
+          ctxE.fillText('R₁', b1, padTop + 10);
+          ctxE.fillStyle = '#D97706';
+          ctxE.fillText('R₂', b2, padTop + 10);
+        }
+
+        // Axes labels
+        ctxE.fillStyle = '#0F172A';
+        ctxE.font = 'bold 10px "Plus Jakarta Sans", sans-serif';
+        ctxE.textAlign = 'left';
+        ctxE.fillText('E (N/kg) ↑', padLeft - 50, padTop - 5);
+        ctxE.textAlign = 'right';
+        ctxE.fillText('r (km) →', wE - padRight, hE - padBottom + 26);
+
+        // Plot E curve
+        ctxE.beginPath();
+        ctxE.strokeStyle = '#DC2626'; // Crimson Red
+        ctxE.lineWidth = 2.4;
+
+        if (mod2.mode === 'hollow') {
+          // Inside: line at E=0
+          ctxE.moveTo(mapX(0), mapYE(0));
+          ctxE.lineTo(mapX(mod2.radius), mapYE(0));
+          // Step jump to E(R)
+          const pSurf = getMod2Physics(mod2.radius);
+          ctxE.moveTo(mapX(mod2.radius), mapYE(pSurf.E));
+          for (let i = 0; i <= steps; i++) {
+            if (rVals[i] >= mod2.radius) {
+              ctxE.lineTo(mapX(rVals[i]), mapYE(eVals[i]));
+            }
+          }
+        } else {
+          for (let i = 0; i <= steps; i++) {
+            const x = mapX(rVals[i]);
+            const y = mapYE(eVals[i]);
+            if (i === 0) ctxE.moveTo(x, y);
+            else ctxE.lineTo(x, y);
+          }
+        }
+        ctxE.stroke();
+
+        // Current Probe on E graph
+        const curPhys = getMod2Physics(mod2.r);
+        const curX_E = mapX(mod2.r);
+        const curY_E = mapYE(curPhys.E);
+
+        ctxE.beginPath();
+        ctxE.arc(curX_E, curY_E, 5.5, 0, Math.PI * 2);
+        ctxE.fillStyle = '#DC2626';
+        ctxE.fill();
+        ctxE.strokeStyle = '#FFFFFF';
+        ctxE.lineWidth = 2;
+        ctxE.stroke();
+
+        document.getElementById('live-graph-e').textContent = `E = ${curPhys.E.toFixed(3)} N/kg`;
+
+        // ================= DRAW GRAPH V vs r =================
+        // Grid
+        ctxV.strokeStyle = '#E2E8F0';
+        ctxV.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+          const vVal = minV + (i / 4) * (maxV - minV);
+          const y = mapYV(vVal);
+          ctxV.beginPath(); ctxV.moveTo(padLeft, y); ctxV.lineTo(wV - padRight, y); ctxV.stroke();
+          ctxV.fillStyle = '#64748B';
+          ctxV.font = '10px "JetBrains Mono", monospace';
+          ctxV.textAlign = 'right';
+          ctxV.fillText(vVal.toFixed(0), padLeft - 6, y + 3);
+        }
+        for (let i = 0; i <= 4; i++) {
+          const rKm = (i / 4) * maxR;
+          const x = mapX(rKm);
+          ctxV.beginPath(); ctxV.moveTo(x, padTop); ctxV.lineTo(x, hV - padBottom); ctxV.stroke();
+          ctxV.fillStyle = '#64748B';
+          ctxV.font = '10px "JetBrains Mono", monospace';
+          ctxV.textAlign = 'center';
+          ctxV.fillText(`${(rKm / 1000).toFixed(0)}k`, x, hV - padBottom + 14);
+        }
+
+        // Boundary vertical lines
+        if (mod2.mode !== 'concentric') {
+          const bX = mapX(mod2.radius);
+          ctxV.beginPath();
+          ctxV.moveTo(bX, padTop); ctxV.lineTo(bX, hV - padBottom);
+          ctxV.strokeStyle = '#0284C7';
+          ctxV.lineWidth = 1.2;
+          ctxV.setLineDash([3, 3]);
+          ctxV.stroke();
+          ctxV.setLineDash([]);
+          ctxV.fillStyle = '#0284C7';
+          ctxV.font = 'bold 10px "JetBrains Mono", monospace';
+          ctxV.textAlign = 'center';
+          ctxV.fillText('r = R', bX, padTop + 10);
+        } else {
+          const b1 = mapX(mod2.r1);
+          const b2 = mapX(mod2.r2);
+          ctxV.strokeStyle = '#0284C7';
+          ctxV.lineWidth = 1.2; ctxV.setLineDash([3, 3]);
+          ctxV.beginPath(); ctxV.moveTo(b1, padTop); ctxV.lineTo(b1, hV - padBottom); ctxV.stroke();
+          ctxV.strokeStyle = '#D97706';
+          ctxV.beginPath(); ctxV.moveTo(b2, padTop); ctxV.lineTo(b2, hV - padBottom); ctxV.stroke();
+          ctxV.setLineDash([]);
+        }
+
+        // Axes labels
+        ctxV.fillStyle = '#0F172A';
+        ctxV.font = 'bold 10px "Plus Jakarta Sans", sans-serif';
+        ctxV.textAlign = 'left';
+        ctxV.fillText('V (MJ/kg) ↑', padLeft - 50, padTop - 5);
+        ctxV.textAlign = 'right';
+        ctxV.fillText('r (km) →', wV - padRight, hV - padBottom + 26);
+
+        // Plot V curve
+        ctxV.beginPath();
+        ctxV.strokeStyle = '#0284C7'; // Brand Blue
+        ctxV.lineWidth = 2.4;
+        for (let i = 0; i <= steps; i++) {
+          const x = mapX(rVals[i]);
+          const y = mapYV(vVals[i]);
+          if (i === 0) ctxV.moveTo(x, y);
+          else ctxV.lineTo(x, y);
+        }
+        ctxV.stroke();
+
+        // Current Probe on V graph
+        const curY_V = mapYV(curPhys.V / 1e6);
+        ctxV.beginPath();
+        ctxV.arc(curX_E, curY_V, 5.5, 0, Math.PI * 2);
+        ctxV.fillStyle = '#0284C7';
+        ctxV.fill();
+        ctxV.strokeStyle = '#FFFFFF';
+        ctxV.lineWidth = 2;
+        ctxV.stroke();
+
+        document.getElementById('live-graph-v').textContent = `V = ${(curPhys.V / 1e6).toFixed(2)} MJ/kg`;
+      }
+
+      // ==========================================
+      // INITIALIZATION & RESIZE LISTENERS
+      // ==========================================
+      window.addEventListener('DOMContentLoaded', () => {
+        setupMod1Events();
+        setupMod2Events();
+        resizeMod1Canvases();
+        resizeMod2Canvases();
+        setLanguage('bn');
+      });
+
+      window.addEventListener('resize', () => {
+        if (activeModule === 1) {
+          resizeMod1Canvases();
+          drawMod1();
+          drawMod1Graph();
+        } else if (activeModule === 2) {
+          resizeMod2Canvases();
+          drawMod2();
+          drawMod2Graphs();
+        }
+      });
+    </script>
+  </body>
+</html>
